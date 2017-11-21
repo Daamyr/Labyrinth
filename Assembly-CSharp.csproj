@@ -51,7 +51,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\createSphere.cs" />
+     <Compile Include="Assets\Scripts\createSphere.cs" />
+     <Compile Include="Assets\Scripts\Graphic.cs" />
+     <Compile Include="Assets\Scripts\Wall.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
