@@ -6,6 +6,8 @@ public class GraphicManager {
 
 	private static GraphicManager instance;
 
+	Material mat = new Material(new Shader());
+
 	Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
 	private static Hashtable loadedTextures = new Hashtable ();
 
@@ -30,6 +32,10 @@ public class GraphicManager {
 			Debug.Log ("Unable to load " + key);
 			return null;
 		}
+	}
+
+	public Material getMat (){
+		return mat;
 	}
 }
 //

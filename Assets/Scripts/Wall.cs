@@ -10,9 +10,12 @@ public class Wall /*: MonoBehaviour*/ {
 	//WallTexture texture;
 	Texture2D texture;
 
+	public Material mat;
+
 	public Wall(){
 		GraphicManager graphicManager = GraphicManager.getInstance ();
 		texture = graphicManager.LoadTexture ("wall");
+		mat = graphicManager.getMat ();
 		Debug.Log ("\tWall created with texture " + texture);
 	}
 

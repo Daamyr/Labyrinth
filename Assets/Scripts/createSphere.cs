@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class createSphere : MonoBehaviour {
 
-	public Button yourButton;
 	public GameObject shit;
 	//public Vector3 position;
 	public Quaternion rotation;
@@ -23,7 +22,8 @@ public class createSphere : MonoBehaviour {
 		if(Input.GetMouseButtonDown(0)){
 			Debug.Log (this.transform.position);
 			Instantiate (this, this.transform.position, this.rotation);
-			Wall wall = new Wall ();
+
+			//Wall wall = new Wall ();
 		}
 
 	}
