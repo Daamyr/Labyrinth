@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class Action {
 
 	public float speed = 5.0f;
+	public float saut = 6.0f;
 
 	public abstract void Execute (Transform player, Action action);
 	public virtual void Move (Transform player){
@@ -67,14 +68,24 @@ public class Left : Action {
 }
 
 public class Jump : Action {
+	private bool jumping = false;
+
+
 	public override void Execute (Transform player, Action action){
 		Move (player);
+		Debug.Log("YO");
 	}
 
 	public override void Move (Transform player){
 		//		Debug.Log ("MOVE RIGHT");
-		Vector3 movement = Vector3.up * speed * Time.deltaTime;
 
-		player.position += movement;
+		//Vector3 movement = Vector3.up * saut * Time.deltaTime;
+
+		if (!jumping) {
+			jumping = true;
+			player.position += Vector3.up * saut;
+		}
+
+		//player.position += movement;
 	}
 }

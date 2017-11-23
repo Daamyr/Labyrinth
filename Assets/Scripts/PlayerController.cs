@@ -21,6 +21,8 @@ public class PlayerController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		handleKey ();
+
+
 	}
 
 	public void handleKey(){
@@ -42,7 +44,7 @@ public class PlayerController : MonoBehaviour {
 		}
 
 		if (Input.GetKey (KeyCode.Space)) {
-			jump.Execute (player, jump);
+				jump.Execute (player, jump);
 		}
 	}
 }
