@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
-	public Transform player;
+	public Player player;
+	public float forceSaut = 25f;
+	public float maxSaut = 10f;
 
 	private Action forward, back, right, left, jump;
 
@@ -15,14 +17,19 @@ public class PlayerController : MonoBehaviour {
 		back = new Back ();
 		right = new Right ();
 		left = new Left ();
-		jump = new Jump ();
+		jump = new Jump (forceSaut, maxSaut, player.GetComponents<Rigidbody>()[0]);
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 		handleKey ();
+	}
 
-
+	public void OnCollisionEnter(Collision col){
+	
+		Debug.Log (col.gameObject.name);
+		//player.GetComponents<hello> () [0].salut ();
+		
 	}
 
 	public void handleKey(){
@@ -44,7 +51,7 @@ public class PlayerController : MonoBehaviour {
 		}
 
 		if (Input.GetKey (KeyCode.Space)) {
-				jump.Execute (player, jump);
+			jump.Execute (player, jump);
 		}
 	}
 }

@@ -1,4 +1,3 @@
-C:\Users\Maxime\Documents\Unity\Labyrinth\obj\Debug\Assembly-CSharp.csprojResolveAssemblyReference.cache
 C:\Users\Maxime\Documents\Unity\Labyrinth\Temp\bin\Debug\Assembly-CSharp.dll
 C:\Users\Maxime\Documents\Unity\Labyrinth\Temp\bin\Debug\Assembly-CSharp.pdb
 C:\Users\Maxime\Documents\Unity\Labyrinth\Temp\bin\Debug\nunit.framework.dll
