@@ -51,13 +51,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\Cell.cs" />
      <Compile Include="Assets\Scripts\createSphere.cs" />
      <Compile Include="Assets\Scripts\CubeFall.cs" />
+     <Compile Include="Assets\Scripts\GameController.cs" />
      <Compile Include="Assets\Scripts\Graphic.cs" />
      <Compile Include="Assets\Scripts\LookAt.cs" />
+     <Compile Include="Assets\Scripts\Maze.cs" />
      <Compile Include="Assets\Scripts\Movements.cs" />
      <Compile Include="Assets\Scripts\Player.cs" />
-     <Compile Include="Assets\Scripts\PlayerController.cs" />
      <Compile Include="Assets\Scripts\Wall.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

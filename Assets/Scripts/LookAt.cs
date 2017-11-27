@@ -16,6 +16,9 @@ public class LookAt : MonoBehaviour {
 //		transform.LookAt (target.transform);
 //	}
 
+	public float minLimit = -90;
+	public float maxLimit = 440;
+
 	public Transform playerBody;
 	public float mouseSensitivity = 2.0f;
 	private float xAxisClamp = 0.0f;
@@ -54,7 +57,7 @@ public class LookAt : MonoBehaviour {
 		targetRotBody.y += rotX;
 
 
-		//sinon la cam elle flip là...
+		//sinon la cam elle flip là... __ ça ne fonctionne pas tout le temps
 		if(xAxisClamp > 90)
 		{
 			xAxisClamp = 90;
@@ -66,11 +69,8 @@ public class LookAt : MonoBehaviour {
 			targetRotCam.x = 270;
 		}
 
-//		transform.Rotate (0, rotY, 0);
-//		playerBody.transform.Rotate(rotX, 0, 0);
-//		transform.Rotate (0, rotAmountX, 0);
-//		transform.Rotate (rotAmountY, 0, 0);
 		transform.rotation = Quaternion.Euler(targetRotCam);
 		playerBody.rotation = Quaternion.Euler(targetRotBody);
+
 	}
 }
