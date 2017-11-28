@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Cell.cs" />
+     <Compile Include="Assets\Scripts\CellTest.cs" />
      <Compile Include="Assets\Scripts\createSphere.cs" />
      <Compile Include="Assets\Scripts\CubeFall.cs" />
      <Compile Include="Assets\Scripts\GameController.cs" />
