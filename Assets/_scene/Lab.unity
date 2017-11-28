@@ -188,6 +188,10 @@ Prefab:
       propertyPath: floor
       value: 
       objectReference: {fileID: 1788203276}
+    - target: {fileID: 1404660517262936, guid: c56ede8535e35ed43b3f0549e891631c, type: 2}
+      propertyPath: m_Name
+      value: CellObject
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c56ede8535e35ed43b3f0549e891631c, type: 2}
   m_IsPrefabParent: 0
@@ -1152,6 +1156,12 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &1520105483 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114986839444760860, guid: c56ede8535e35ed43b3f0549e891631c,
+    type: 2}
+  m_PrefabInternal: {fileID: 434372266}
+  m_Script: {fileID: 11500000, guid: b7428c8ffca20c14885aa9cdd5b4559c, type: 3}
 --- !u!1 &1553359575
 GameObject:
   m_ObjectHideFlags: 0
@@ -1183,8 +1193,9 @@ MonoBehaviour:
   manualFloorScaleX: 10
   manualFloorScaleY: 1
   manualFloorScaleZ: 10
-  cellObject: {fileID: 114986839444760860, guid: c56ede8535e35ed43b3f0549e891631c,
+  floorPrefab: {fileID: 1977234794633560, guid: 70376d065a4281d4089da61118ac1880,
     type: 2}
+  cellObject: {fileID: 1520105483}
   generationStepDelay: 0.15
 --- !u!4 &1553359577
 Transform:

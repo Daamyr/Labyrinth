@@ -10,6 +10,7 @@ public class Maze : MonoBehaviour
     public int manualFloorScaleY;
     public int manualFloorScaleZ;
 
+    public GameObject floorPrefab;
 
     public Cell cellObject;
 
@@ -51,13 +52,10 @@ public class Maze : MonoBehaviour
     {
         WaitForSeconds delay = new WaitForSeconds(generationStepDelay);
         cells = new Cell[size.x, size.y];
-        for (int x = 0; x < size.x; x++)
+        for (int i = 0; i < size.x; i++)
         {
-            for (int y = 0; y < size.y; y++)
-            {
-                yield return delay;
-                CreateCell(new Vector2Int(x,y));
-            }
+            CreateCell(new Vector2Int(i, 0));
+            yield return delay;
         }
     }
 
@@ -65,11 +63,16 @@ public class Maze : MonoBehaviour
     private void CreateCell(Vector2Int coordinates)
     {
         Cell newCell = Instantiate(cellObject) as Cell;
+        newCell.Coordinates = coordinates;
+        newCell.FloorPrefab = floorPrefab;
         cells[coordinates.x, coordinates.y] = newCell;
         newCell.name = "Maze Cell " + coordinates.x + ", " + coordinates.y;
         newCell.transform.parent = transform;
         //newCell.transform.localPosition = new Vector3(x - sizeX * 0.5f + 0.5f, 0f, z - sizeZ * 0.5f + 0.5f);
-        newCell.transform.localPosition = new Vector3(coordinates.x  * manualFloorScaleX + manualFloorScaleX, 0f, coordinates.y * manualFloorScaleZ + manualFloorScaleZ);
-        Debug.Log(newCell.transform.position.ToString());
+        //newCell.transform.localPosition = new Vector3(coordinates.x * manualFloorScaleX + manualFloorScaleX, 0f, coordinates.y * manualFloorScaleZ + manualFloorScaleZ);
+        newCell.transform.localPosition = new Vector3(coordinates.x * floorPrefab.transform.lossyScale.x + floorPrefab.transform.lossyScale.x,
+                                                    0f,
+                                                    coordinates.y * floorPrefab.transform.lossyScale.z + floorPrefab.transform.lossyScale.z);
+        //Debug.Log(newCell.transform.position.ToString());
     }
 }
