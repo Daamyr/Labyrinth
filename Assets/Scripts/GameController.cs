@@ -23,13 +23,15 @@ public class GameController : MonoBehaviour {
 	}
 
 	private void BeginGame () {
-		instance = Instantiate(maze) as Maze;
+		//instance = Instantiate(maze) as Maze;
         StartCoroutine(instance.Generate());
     }
 
 	private void RestartGame () {
         StopAllCoroutines();
-		Destroy(instance.gameObject);
+        instance.KillCells();
+        //maze.CellTest = null;
+		//Destroy(instance.gameObject);
 		BeginGame();
 	}
 

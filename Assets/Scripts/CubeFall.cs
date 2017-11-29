@@ -17,9 +17,11 @@ public class CubeFall : MonoBehaviour {
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.LeftShift)) {
 			this.GetComponents<Rigidbody> () [0].isKinematic = false;
-            test = new CellTest(new Vector3(0,20,0));
+            /*test = new CellTest(new Vector3(10, 0, 10));
             test.FloorPrefab = floorPrefab;
-            test.Draw();
+            test.WallPrefab = wallPrefab;
+            Debug.Log("Update-> " + test.FloorPrefab);
+            test.Generate();*/
 
         }
 	}

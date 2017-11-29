@@ -2,44 +2,116 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CellTest {
+public class CellTest : MonoBehaviour{
 
-    GameObject floorPrefab;
-    GameObject wallPrefab;
+    GameObject m_floorPrefab;
+    GameObject m_wallPrefab;
 
-    public GameObject FloorPrefab { get; set; }
-    public GameObject WallPrefab { get; set; }
+    bool m_visited = false;
 
-    GameObject floor;
-    GameObject wallN;
-    GameObject wallE;
-    GameObject wallS;
-    GameObject wallW;
-
-    Vector3 cordinates;
-
-    public CellTest(Vector3 _cordinates)
+    public bool Visited
     {
-        cordinates = _cordinates;
-        Debug.Log("CellTest-> " + cordinates.ToString());
-        //floor = Instantiate(floorPrefab, cordinates, floorPrefab.transform.rotation) as GameObject;
-        //Instantiate(floorPrefab);
+        get { return m_visited; }
+        set { m_visited = value; }
     }
 
-    public void Draw()
+    public GameObject FloorPrefab
     {
-        Debug.Log("draw-> " + floorPrefab);
-        //floor = Instantiate(floorPrefab, cordinates, floorPrefab.transform.rotation) as GameObject;
+        get { return m_floorPrefab; }
+        set { m_floorPrefab = value; }
     }
-    /*
-    // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-    */
+
+    public GameObject WallPrefab
+    {
+        get { return m_wallPrefab; }
+        set { m_wallPrefab = value; }
+    }
+
+    GameObject m_floor;
+    GameObject m_wallN;
+    GameObject m_wallE;
+    GameObject m_wallS;
+    GameObject m_wallW;
+
+    Vector3 m_coordinates;
+
+    public Vector3 Coordinates
+    {
+        get { return m_coordinates; }
+        set { m_coordinates = value; }
+    }
+
+    public CellTest(Vector3 _coordinates)
+    {
+        m_coordinates = _coordinates;
+    }
+
+    public void Generate()
+    {
+        m_floor = Instantiate(m_floorPrefab, m_coordinates, m_floorPrefab.transform.rotation) as GameObject;
+
+        float wallY = m_coordinates.y + m_floorPrefab.transform.localScale.y / 2  + m_wallPrefab.transform.localScale.y / 2;
+
+        Vector3 wallN = new Vector3(m_coordinates.x + m_floor.transform.localScale.x /2 - m_wallPrefab.transform.localScale.x / 2, wallY, m_coordinates.z);
+
+        Vector3 wallE = new Vector3(m_coordinates.x, wallY, m_coordinates.z + m_floor.transform.localScale.z / 2 - m_wallPrefab.transform.localScale.x / 2);
+
+        Vector3 wallS = new Vector3(m_coordinates.x - m_floor.transform.localScale.x /2 + m_wallPrefab.transform.localScale.x / 2, wallY, m_coordinates.z);
+
+        Vector3 wallW = new Vector3(m_coordinates.x, wallY, m_coordinates.z - m_floor.transform.localScale.z / 2 + m_wallPrefab.transform.localScale.x / 2);
+
+        m_wallN = Instantiate(m_wallPrefab, wallN, m_floorPrefab.transform.rotation) as GameObject;
+        m_wallE = Instantiate(m_wallPrefab, wallE, m_floorPrefab.transform.rotation) as GameObject;
+        m_wallS = Instantiate(m_wallPrefab, wallS, m_floorPrefab.transform.rotation) as GameObject;
+        m_wallW = Instantiate(m_wallPrefab, wallW, m_floorPrefab.transform.rotation) as GameObject;
+
+        m_wallE.transform.Rotate(new Vector3(0, 90, 0));
+        m_wallW.transform.Rotate(new Vector3(0, 90, 0));
+
+        SetNames();
+    }
+
+    void SetNames()
+    {
+        m_floor.name = "Floor " + this.name;
+        m_wallN.name = "Wall North x: " + m_coordinates.x + " y: " + m_coordinates.y;
+        m_wallE.name = "Wall East x: " + m_coordinates.x + " y: " + m_coordinates.y;
+        m_wallS.name = "Wall South x: " + m_coordinates.x + " y: " + m_coordinates.y;
+        m_wallW.name = "Wall West x: " + m_coordinates.x + " y: " + m_coordinates.y;
+    }
+
+    List<CellTest> m_neighbors;
+
+    public List<CellTest> Neighbors
+    {
+        get { return m_neighbors; }
+    }
+
+    public void FindNeighbors()
+    {
+        GameObject[] _cells = GameObject.FindGameObjectsWithTag("CellShell");
+        m_neighbors = new List<CellTest>();
+        for (int i = 0; i < _cells.Length; i++)
+        {
+            CellTest yo = _cells[i].GetComponent<CellTest>();
+            float distance = Vector3.Distance(transform.position, yo.transform.position/*_cells[i].transform.position*/);
+            //Debug.Log("distance de " + yo/*_cells[i].name*/ + ": " + distance);
+            //Si la distance == floor.transforme.scale.x/z alors c'est un voisin direct (ligne droite)
+            if(distance == m_floor.transform.localScale.x) {
+                m_neighbors.Add(yo);
+              }
+        }
+    }
+
+    public void Destroy()
+    {
+        //Debug.Log("Je supprime " + name);
+        Destroy(m_floor);
+        Destroy(m_wallN);
+        Destroy(m_wallE);
+        Destroy(m_wallS);
+        Destroy(m_wallW);
+        //Destroy(this);
+    }
+    
 }
