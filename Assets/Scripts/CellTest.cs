@@ -27,6 +27,7 @@ public class CellTest : MonoBehaviour{
         set { m_wallPrefab = value; }
     }
 
+
     GameObject m_floor;
     GameObject m_wallN;
     GameObject m_wallE;
@@ -46,6 +47,25 @@ public class CellTest : MonoBehaviour{
         m_coordinates = _coordinates;
     }
 
+    Hashtable m_neighbors;
+
+    public Hashtable Neighbors
+    {
+        get { return m_neighbors; }
+    }
+
+    //List<CellTest> m_neighbors;
+
+    //public List<CellTest> Neighbors
+    //{
+    //    get { return m_neighbors; }
+    //}
+
+    void Start()
+    {
+        Debug.Log("yo");
+    }
+
     public void Generate()
     {
         m_floor = Instantiate(m_floorPrefab, m_coordinates, m_floorPrefab.transform.rotation) as GameObject;
@@ -54,11 +74,11 @@ public class CellTest : MonoBehaviour{
 
         Vector3 wallN = new Vector3(m_coordinates.x + m_floor.transform.localScale.x /2 - m_wallPrefab.transform.localScale.x / 2, wallY, m_coordinates.z);
 
-        Vector3 wallE = new Vector3(m_coordinates.x, wallY, m_coordinates.z + m_floor.transform.localScale.z / 2 - m_wallPrefab.transform.localScale.x / 2);
+        Vector3 wallE = new Vector3(m_coordinates.x, wallY, m_coordinates.z - m_floor.transform.localScale.z / 2 + m_wallPrefab.transform.localScale.x / 2); 
 
         Vector3 wallS = new Vector3(m_coordinates.x - m_floor.transform.localScale.x /2 + m_wallPrefab.transform.localScale.x / 2, wallY, m_coordinates.z);
 
-        Vector3 wallW = new Vector3(m_coordinates.x, wallY, m_coordinates.z - m_floor.transform.localScale.z / 2 + m_wallPrefab.transform.localScale.x / 2);
+        Vector3 wallW = new Vector3(m_coordinates.x, wallY, m_coordinates.z + m_floor.transform.localScale.z / 2 - m_wallPrefab.transform.localScale.x / 2);
 
         m_wallN = Instantiate(m_wallPrefab, wallN, m_floorPrefab.transform.rotation) as GameObject;
         m_wallE = Instantiate(m_wallPrefab, wallE, m_floorPrefab.transform.rotation) as GameObject;
@@ -80,26 +100,31 @@ public class CellTest : MonoBehaviour{
         m_wallW.name = "Wall West x: " + m_coordinates.x + " y: " + m_coordinates.y;
     }
 
-    List<CellTest> m_neighbors;
-
-    public List<CellTest> Neighbors
-    {
-        get { return m_neighbors; }
-    }
-
     public void FindNeighbors()
     {
         GameObject[] _cells = GameObject.FindGameObjectsWithTag("CellShell");
-        m_neighbors = new List<CellTest>();
+        //m_neighbors = new List<CellTest>();
+        m_neighbors = new Hashtable();
         for (int i = 0; i < _cells.Length; i++)
         {
             CellTest yo = _cells[i].GetComponent<CellTest>();
-            float distance = Vector3.Distance(transform.position, yo.transform.position/*_cells[i].transform.position*/);
-            //Debug.Log("distance de " + yo/*_cells[i].name*/ + ": " + distance);
+            float distance = Vector3.Distance(transform.position, yo.transform.position);
+
             //Si la distance == floor.transforme.scale.x/z alors c'est un voisin direct (ligne droite)
             if(distance == m_floor.transform.localScale.x) {
-                m_neighbors.Add(yo);
-              }
+                //m_neighbors.Add(yo);
+                if (yo.transform.position.x == transform.position.x + m_floor.transform.localScale.x && yo.transform.position.z == transform.position.z)
+                    m_neighbors.Add("North", yo);
+
+                if (yo.transform.position.x == transform.position.x && yo.transform.position.z == transform.position.z - m_floor.transform.localScale.z)
+                    m_neighbors.Add("East", yo);
+
+                if (yo.transform.position.x == transform.position.x - m_floor.transform.localScale.x && yo.transform.position.z == transform.position.z)
+                    m_neighbors.Add("South", yo);
+
+                if (yo.transform.position.x == transform.position.x && yo.transform.position.z == transform.position.z + m_floor.transform.localScale.z)
+                    m_neighbors.Add("West", yo);
+            }
         }
     }
 

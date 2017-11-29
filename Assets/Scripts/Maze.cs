@@ -13,6 +13,7 @@ public class Maze : MonoBehaviour
     State m_state;
 
     public Vector2Int size;
+    public Vector2Int beginPath;
 
     public GameObject floorPrefab;
     public GameObject wallPrefab;
@@ -27,10 +28,14 @@ public class Maze : MonoBehaviour
         set { cells = value; }
     }
 
+    Stack m_path;//chemin final
+    Stack m_visited; //stack à dépiller
+
     // Use this for initialization
     void Start()
     {
         m_state = State.CreatingCells;
+        m_visited = new Stack();
     }
 
     // Update is called once per frame
@@ -101,8 +106,6 @@ public class Maze : MonoBehaviour
         CreatePath();
     }
 
-    Stack path = new Stack();
-
 
     void CreatePath()
     {
@@ -118,52 +121,67 @@ public class Maze : MonoBehaviour
          *  -cells[0,2]
          *  -cells[1,1]
          */
-        CellTest begin = cells[3, 3];
+        FindAllNeighbors();
+        CellTest begin = cells[beginPath.x, beginPath.y];
+        begin.Visited = true;
+        
+        m_visited.Push(begin);
+        
+        TODO: recuperer tous les voisins oneShot
 
-        FindNeighbors(begin);
+        //CellTest cell = m_visited.Peek() as CellTest;
+        //List<CellTest> possibleCell = cell.Neighbors;
+
+        //Debug.Log("->cell possible: " + possibleCell.Count);
+
+        foreach (CellTest neighbor in possibleCell)
+        {
+            //Debug.Log("--->neighbor: " + neighbor.name);
+            if (neighbor.Visited)
+            {
+                possibleCell.Remove(neighbor);
+                break;
+            }
+        }
+        //Debug.Log("----->cell possible tri: " + possibleCell.Count);
+
+        //System.Random rand = new System.Random();
+        //int nextCell = rand.Next(0, possibleCell.Count);
+
+        int nextCell = Random.Range(0, possibleCell.Count);
+
+        Debug.Log("next cell: " + possibleCell[nextCell].name);
+
+        
 
 
     }
 
-    List<CellTest> FindNeighbors(CellTest cell)
+    bool AllVisited()
     {
-        List<CellTest> neighbors = new List<CellTest>();
-        // CellTest[] neighbors = new CellTest[];
-
-        //Collider[] hitColliders = Physics.OverlapSphere(cell.transform.position, cell.FloorPrefab.transform.localScale.x);
-        //int i = 0;
-        //while (i < hitColliders.Length)
-        //{
-        //    hitColliders[i].SendMessage("AddDamage");
-        //    i++;
-        //}
-
-        /*for (int i = 0; i < size.x; i++)
+        for (int x = 0; x < size.x; x++)
         {
             for (int y = 0; y < size.y; y++)
             {
-                //if(cell.)
+                if (cells[x, y].Visited)
+                {
+                    return false;
+                }
             }
-        }*/
-        //GameObject[] _cells = GameObject.FindGameObjectsWithTag("CellShell");
-
-        //for (int i = 0; i < _cells.Length; i++)
-        //{
-        //    Debug.Log("distance de " + _cells[i].name + ": " + Vector3.Distance(cell.transform.position, _cells[i].transform.position));
-        //Si la distance == floor.transforme.scale.x/z alors c'est un voisin direct (ligne droite)
-        // }
-
-
-        cell.FindNeighbors();
-        //cell.Neighbors
-
-
-        for (int i = 0; i < cell.Neighbors.Count; i++)
-        {
-            Debug.Log("voisin " + (i + 1) + ": " + cell.Neighbors[i].name);
         }
 
-        return neighbors;
+        return true;
+    }
+
+    void FindAllNeighbors()
+    {
+        for (int x = 0; x < size.x; x++)
+        {
+            for (int y = 0; y < size.y; y++)
+            {
+                cells[x, y].FindNeighbors();
+            }
+        }
     }
 
     //TODO: Move this code to the a factory
@@ -172,9 +190,6 @@ public class Maze : MonoBehaviour
         Vector3 position = new Vector3(coordinates.x * floorPrefab.transform.lossyScale.x + floorPrefab.transform.lossyScale.x,
                                                    0f,
                                                    coordinates.y * floorPrefab.transform.lossyScale.z + floorPrefab.transform.lossyScale.z);
-        //CellTest newCell = new CellTest(position);
-
-        //CellTest newCell = new CellTest(position);
 
         CellTest newCell = Instantiate(cellObject, position, new Quaternion()) as CellTest;
 

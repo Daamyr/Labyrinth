@@ -52,12 +52,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: {x: 4, y: 4}
-  manualFloorScaleX: 10
-  manualFloorScaleY: 1
-  manualFloorScaleZ: 10
+  beginPath: {x: 0, y: 0}
   floorPrefab: {fileID: 1977234794633560, guid: 70376d065a4281d4089da61118ac1880,
     type: 2}
   wallPrefab: {fileID: 1519036981174886, guid: 3d257d0b4efd5e247b57fe99ae8ae78a, type: 2}
   cellObject: {fileID: 114446437789602750, guid: e182d9a575935584397a85146e723fbf,
     type: 2}
-  generationStepDelay: 0.15
+  generationStepDelay: 0.01
