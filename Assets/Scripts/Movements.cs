@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class Action {
 
-	public float speed = 5.0f;
+	public float speed = 6.0f;
 
 	public abstract void Execute (Player player, Action action);
 	public abstract void Move (Transform player_body);

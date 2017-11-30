@@ -354,6 +354,7 @@ MonoBehaviour:
   maxLimit: 359.85
   playerBody: {fileID: 1078054494}
   mouseSensitivity: 2
+  lockCursor: 0
 --- !u!1 &1078054489
 GameObject:
   m_ObjectHideFlags: 0
@@ -365,8 +366,8 @@ GameObject:
   - component: {fileID: 1078054493}
   - component: {fileID: 1078054492}
   - component: {fileID: 1078054491}
-  - component: {fileID: 1078054495}
   - component: {fileID: 1078054490}
+  - component: {fileID: 1078054495}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -469,8 +470,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameObject: {fileID: 1078054489}
+  camera: {fileID: 1060390985}
   forceSaut: 35
   maxSaut: 10
+  timer: 0.4
+  angle: 0.05
 --- !u!1 &1400764230
 GameObject:
   m_ObjectHideFlags: 0

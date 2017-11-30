@@ -3,13 +3,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CellTest : MonoBehaviour{
+public class CellTest : MonoBehaviour
+{
 
     GameObject m_floorPrefab;
     GameObject m_wallPrefab;
 
+    GameObject m_floor;
+    GameObject m_wallN;
+    GameObject m_wallE;
+    GameObject m_wallS;
+    GameObject m_wallW;
+
+    Vector3 m_coordinates;
+
+    Hashtable m_neighbors;
+
     bool m_visited = false;
 
+    public GameObject debugTo; // dessine un object à chaque case
+
+    #region Geters/Setters
     public bool Visited
     {
         get { return m_visited; }
@@ -28,7 +42,8 @@ public class CellTest : MonoBehaviour{
         set { m_wallPrefab = value; }
     }
 
-    public List<GameObject> Walls {
+    public List<GameObject> Walls
+    {
         get
         {
             List<GameObject> walls = new List<GameObject>();
@@ -42,14 +57,6 @@ public class CellTest : MonoBehaviour{
         }
     }
 
-    GameObject m_floor;
-    GameObject m_wallN;
-    GameObject m_wallE;
-    GameObject m_wallS;
-    GameObject m_wallW;
-
-    Vector3 m_coordinates;
-
     public Vector3 Coordinates
     {
         get { return m_coordinates; }
@@ -59,18 +66,6 @@ public class CellTest : MonoBehaviour{
     public CellTest(Vector3 _coordinates)
     {
         m_coordinates = _coordinates;
-    }
-
-    Hashtable m_neighbors;
-    //Hashtable m_opposit;
-    Dictionary<string, string> m_opposit;
-    //Dictionary<string, CellTest> m_neighbors;
-
-    enum Ways{
-        North,
-        East,
-        South,
-        West
     }
 
     public List<CellTest> NeighborList
@@ -91,52 +86,89 @@ public class CellTest : MonoBehaviour{
             return neighbors;
         }
     }
+
     public CellTest NeighborNorth
     {
         get { return m_neighbors["North"] as CellTest; }
     }
+
     public CellTest NeighborEast
     {
         get { return m_neighbors["East"] as CellTest; }
     }
+
     public CellTest NeighborSouth
     {
         get { return m_neighbors["South"] as CellTest; }
     }
+
     public CellTest NeighborWest
     {
         get { return m_neighbors["West"] as CellTest; }
     }
+    #endregion
 
-    //List<CellTest> m_neighbors;
-
-    //public List<CellTest> Neighbors
-    //{
-    //    get { return m_neighbors; }
-    //}
+    enum Way
+    {
+        None,
+        North,
+        East,
+        South,
+        West
+    }
 
     void Start()
     {
-        m_opposit = new Dictionary<string, string>();
-        /*
-        m_opposit["North"] = Ways.South;
-        m_opposit["East"] = Ways.West;
-        m_opposit["South"] = Ways.North;
-        m_opposit["West"] = Ways.East;
-        */
+    }
+
+    Way whichNeighbor(CellTest _cell)
+    {
+        if (_cell == NeighborNorth)
+            return Way.North;
+
+        if (_cell == NeighborEast)
+            return Way.East;
+
+        if (_cell == NeighborSouth)
+            return Way.South;
+
+        if (_cell == NeighborWest)
+            return Way.West;
+
+        return Way.None;
+    }
+
+    bool canAccess(CellTest _cell)
+    {
+        Way way = whichNeighbor(_cell);
+        if (way == Way.None)
+            return false;
+
+        switch (way)
+        {
+            case Way.North:
+                if (m_wallN != null || _cell.m_wallS)
+                    return false;
+                else
+                    return true;
+
+
+        }
+
+        return false;
     }
 
     public void Generate()
     {
         m_floor = Instantiate(m_floorPrefab, m_coordinates, m_floorPrefab.transform.rotation) as GameObject;
 
-        float wallY = m_coordinates.y + m_floorPrefab.transform.localScale.y / 2  + m_wallPrefab.transform.localScale.y / 2;
+        float wallY = m_coordinates.y + m_floorPrefab.transform.localScale.y / 2 + m_wallPrefab.transform.localScale.y / 2;
 
-        Vector3 wallN = new Vector3(m_coordinates.x + m_floor.transform.localScale.x /2 - m_wallPrefab.transform.localScale.x / 2, wallY, m_coordinates.z);
+        Vector3 wallN = new Vector3(m_coordinates.x + m_floor.transform.localScale.x / 2 - m_wallPrefab.transform.localScale.x / 2, wallY, m_coordinates.z);
 
-        Vector3 wallE = new Vector3(m_coordinates.x, wallY, m_coordinates.z - m_floor.transform.localScale.z / 2 + m_wallPrefab.transform.localScale.x / 2); 
+        Vector3 wallE = new Vector3(m_coordinates.x, wallY, m_coordinates.z - m_floor.transform.localScale.z / 2 + m_wallPrefab.transform.localScale.x / 2);
 
-        Vector3 wallS = new Vector3(m_coordinates.x - m_floor.transform.localScale.x /2 + m_wallPrefab.transform.localScale.x / 2, wallY, m_coordinates.z);
+        Vector3 wallS = new Vector3(m_coordinates.x - m_floor.transform.localScale.x / 2 + m_wallPrefab.transform.localScale.x / 2, wallY, m_coordinates.z);
 
         Vector3 wallW = new Vector3(m_coordinates.x, wallY, m_coordinates.z + m_floor.transform.localScale.z / 2 - m_wallPrefab.transform.localScale.x / 2);
 
@@ -150,74 +182,75 @@ public class CellTest : MonoBehaviour{
 
         SetNames();
     }
-
+    
     public void PathTo(CellTest _cell)
     {
-        //suprimer le mur qui sépare la cell de la suivante
-        RaycastHit hit;
-        print("--->from " + this.name + " to " + _cell.name);
-    
-        Vector3 from = transform.position;
-        from.y += m_wallPrefab.transform.localScale.y / 2;
+        //suprimer le mur qui sépare la cell de la suivante && supprimer le mur opposé du voisin
+
+        Way way = whichNeighbor(_cell);
+
+        switch (way)
+        {
+            case Way.North:
+                //Debug.Log("--->to the north");
+                Destroy(m_wallN);
+                Destroy(_cell.m_wallS);
+                break;
+
+            case Way.East:
+                //Debug.Log("--->to the east");
+                Destroy(m_wallE);
+                Destroy(_cell.m_wallW);
+                break;
+
+            case Way.South:
+                //Debug.Log("--->to the south");
+                Destroy(m_wallS);
+                Destroy(_cell.m_wallN);
+                break;
+
+            case Way.West:
+                //Debug.Log("--->to the west");
+                Destroy(m_wallW);
+                Destroy(_cell.m_wallE);
+                break;
+        }
+        /*
+        if (_cell == NeighborNorth)
+        {
+            //Debug.Log("--->to the north");
+            Destroy(m_wallN);
+            Destroy(_cell.m_wallS);
+        }
+        if (_cell == NeighborEast)
+        {
+            //Debug.Log("--->to the east");
+            Destroy(m_wallE);
+            Destroy(_cell.m_wallW);
+        }
+        if (_cell == NeighborSouth)
+        {
+            //Debug.Log("--->to the south");
+            Destroy(m_wallS);
+            Destroy(_cell.m_wallN);
+        }
+        if (_cell == NeighborWest)
+        {
+            //Debug.Log("--->to the west");
+            Destroy(m_wallW);
+            Destroy(_cell.m_wallE);
+        }
+        */
 
         Vector3 to = _cell.transform.position;
         to.y += m_wallPrefab.transform.localScale.y / 2;
 
-        if (Physics.Raycast(from, to, out hit))
-        {
-            //Debug.Log("wall: " + hit.transform.name);
-            //détruire le mur quand on le frappe
-            /*foreach (var wall in Walls)
-            {
-                if(wall == hit.transform.gameObject)
-                {
-                    Destroy(wall);
-                }
-
-            }*/
-            if (m_wallN == hit.transform.gameObject)
-            {
-                //Destroy(m_wallN);
-                //Destroy(_cell.m_wallS);
-            }
-
-            if (m_wallE == hit.transform.gameObject)
-            {
-                //Destroy(m_wallE);
-                //Destroy(_cell.m_wallW);
-            }
-
-            if (m_wallS == hit.transform.gameObject)
-            {
-                //Destroy(m_wallS);
-                //Destroy(_cell.m_wallN);
-            }
-
-            if (m_wallW == hit.transform.gameObject)
-            {
-                Destroy(m_wallW);
-                Destroy(_cell.m_wallE);
-            }
-
-        }
-
-        //appeler une fonction dans cellTest pour supprimer le mur à l'opposé
-
-    }
-
-    void SetNames()
-    {
-        m_floor.name = "Floor " + this.name;
-        m_wallN.name = "Wall North " + this.name;//x: " + m_coordinates.x + " y: " + m_coordinates.y;
-        m_wallE.name = "Wall East " + this.name;//x: " + m_coordinates.x + " y: " + m_coordinates.y;
-        m_wallS.name = "Wall South " + this.name;//x: " + m_coordinates.x + " y: " + m_coordinates.y;
-        m_wallW.name = "Wall West " + this.name;//x: " + m_coordinates.x + " y: " + m_coordinates.y;
+        Instantiate(debugTo, to, new Quaternion());
     }
 
     public void FindNeighbors()
     {
         GameObject[] _cells = GameObject.FindGameObjectsWithTag("CellShell");
-        //m_neighbors = new List<CellTest>();
         m_neighbors = new Hashtable();
         for (int i = 0; i < _cells.Length; i++)
         {
@@ -225,8 +258,8 @@ public class CellTest : MonoBehaviour{
             float distance = Vector3.Distance(transform.position, yo.transform.position);
 
             //Si la distance == floor.transforme.scale.x/z alors c'est un voisin direct (ligne droite)
-            if(distance == m_floor.transform.localScale.x) {
-                //m_neighbors.Add(yo);
+            if (distance == m_floor.transform.localScale.x)
+            {
                 if (yo.transform.position.x == transform.position.x + m_floor.transform.localScale.x && yo.transform.position.z == transform.position.z)
                     m_neighbors.Add("North", yo);
 
@@ -240,17 +273,32 @@ public class CellTest : MonoBehaviour{
                     m_neighbors.Add("West", yo);
             }
         }
+
+        /*Debug.Log(name + " voisins: ");
+        Debug.Log("---> N: " + m_neighbors["North"]);
+        Debug.Log("---> E: " + m_neighbors["East"]);
+        Debug.Log("---> S: " + m_neighbors["South"]);
+        Debug.Log("---> W: " + m_neighbors["West"]);
+        Debug.Log(this.NeighborList.Count);
+        Debug.Log("----------------------------------------\n");*/
+
     }
 
     public void Destroy()
     {
-        //Debug.Log("Je supprime " + name);
         Destroy(m_floor);
         Destroy(m_wallN);
         Destroy(m_wallE);
         Destroy(m_wallS);
         Destroy(m_wallW);
-        //Destroy(this);
     }
-    
+
+    void SetNames()
+    {
+        m_floor.name = "Floor " + this.name;
+        m_wallN.name = "Wall North " + this.name;
+        m_wallE.name = "Wall East " + this.name;
+        m_wallS.name = "Wall South " + this.name;
+        m_wallW.name = "Wall West " + this.name;
+    }
 }

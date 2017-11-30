@@ -125,17 +125,21 @@ public class Maze : MonoBehaviour
          *  -cells[1,1]
          */
         FindAllNeighbors();
+        m_state = State.CreatingPath;
+        StartCoroutine("hunt");
         //begin.Visited = true;
 
         //m_stack.Push(begin);
 
+        /*
         do
         {
             CellTest cell = m_stack.Peek() as CellTest;
-            Debug.Log("------->peekll cell: " + cell.name + " nb dans la stack: " + m_stack.Count);
+            Debug.Log("------->peek cell: " + cell.name + " nb dans la stack: " + m_stack.Count);
             cell.Visited = true;
             List<CellTest> possibleCell = new List<CellTest>();
             possibleCell =  cell.NeighborList;
+            
 
             foreach (CellTest neighbor in possibleCell)
             {
@@ -161,12 +165,69 @@ public class Maze : MonoBehaviour
             m_stack.Push(possibleCell[nextCell]);
             tries -= 1;
         } while (!AllVisited() && tries > 0);
-
+        */
 
 
 
     }
-        public int tries;
+    public float huntDelay = 1;
+    public IEnumerator hunt()
+    {
+        while (m_state == State.CreatingPath)
+        {
+            WaitForSeconds delay = new WaitForSeconds(huntDelay);
+            CellTest cell = m_stack.Peek() as CellTest;
+            //Debug.Log("------->peek cell: " + cell.name + " nb dans la stack: " + m_stack.Count);
+            cell.Visited = true;
+
+            if (AllVisited())
+            {
+                m_state = State.Finished;
+                yield break;
+            }
+
+            List<CellTest> possibleCell = new List<CellTest>();
+            possibleCell = cell.NeighborList;
+
+            bool again;
+            do
+            {
+                again = false;
+                foreach (CellTest neighbor in possibleCell)
+                {
+                    if (neighbor.Visited)
+                    {
+                        possibleCell.Remove(neighbor);
+                        again = true;
+                        break;
+                    }
+                }
+            } while (again);
+
+           // Debug.Log("-->nb dans la stack: " + m_stack.Count);
+            if (possibleCell.Count <= 0)
+            {
+                //Debug.Log("-->DEPOP");
+                m_stack.Pop();
+                //Debug.Log("-->nb dans la stack: " + m_stack.Count);
+                //yield break;
+            }
+            else
+            {
+            int nextCell = Random.Range(0, possibleCell.Count);
+            //Debug.Log(">next cell: " + possibleCell[nextCell].name);
+
+
+            cell.PathTo(possibleCell[nextCell]);
+            m_stack.Push(possibleCell[nextCell]);
+            }
+
+            yield return delay;
+
+        }
+    }
+
+    public int tries;
 
     bool AllVisited()
     {
@@ -174,13 +235,14 @@ public class Maze : MonoBehaviour
         {
             for (int y = 0; y < size.y; y++)
             {
-                if (cells[x, y].Visited)
+                if (cells[x, y].Visited == false)
                 {
                     return false;
                 }
             }
         }
 
+        Debug.Log("C FINI LOL");
         return true;
     }
 
