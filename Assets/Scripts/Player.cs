@@ -29,7 +29,7 @@ public class Player : MonoBehaviour {
 
 	public void OnCollisionEnter(Collision col){
 
-		Debug.Log (col.gameObject.name);
+		//Debug.Log (col.gameObject.name);
 		//player.GetComponents<hello> () [0].salut ();
 
 	}

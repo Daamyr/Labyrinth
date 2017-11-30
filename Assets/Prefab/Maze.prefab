@@ -59,3 +59,4 @@ MonoBehaviour:
   cellObject: {fileID: 114446437789602750, guid: e182d9a575935584397a85146e723fbf,
     type: 2}
   generationStepDelay: 0.01
+  tries: 5

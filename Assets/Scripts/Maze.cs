@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Maze : MonoBehaviour
 {
-    enum State {
+    enum State
+    {
         CreatingCells,
         CreatingPath,
         Finished
@@ -29,13 +30,13 @@ public class Maze : MonoBehaviour
     }
 
     Stack m_path;//chemin final
-    Stack m_visited; //stack à dépiller
+    Stack m_stack; //stack à dépiller
 
     // Use this for initialization
     void Start()
     {
         m_state = State.CreatingCells;
-        m_visited = new Stack();
+        m_stack = new Stack();
     }
 
     // Update is called once per frame
@@ -78,7 +79,7 @@ public class Maze : MonoBehaviour
                     cells[i, y].Destroy();
                     Destroy(cells[i, y]);
                 }
-                catch (System.Exception){}
+                catch (System.Exception) { }
                 //}
             }
         }
@@ -103,6 +104,8 @@ public class Maze : MonoBehaviour
         }
 
         m_state = State.CreatingPath; //execute one when all cells are create
+        m_stack = new Stack();
+        m_stack.Push(cells[beginPath.x, beginPath.y]);
         CreatePath();
     }
 
@@ -122,40 +125,48 @@ public class Maze : MonoBehaviour
          *  -cells[1,1]
          */
         FindAllNeighbors();
-        CellTest begin = cells[beginPath.x, beginPath.y];
-        begin.Visited = true;
-        
-        m_visited.Push(begin);
-        
-        TODO: recuperer tous les voisins oneShot
+        //begin.Visited = true;
 
-        //CellTest cell = m_visited.Peek() as CellTest;
-        //List<CellTest> possibleCell = cell.Neighbors;
+        //m_stack.Push(begin);
 
-        //Debug.Log("->cell possible: " + possibleCell.Count);
-
-        foreach (CellTest neighbor in possibleCell)
+        do
         {
-            //Debug.Log("--->neighbor: " + neighbor.name);
-            if (neighbor.Visited)
+            CellTest cell = m_stack.Peek() as CellTest;
+            Debug.Log("------->peekll cell: " + cell.name + " nb dans la stack: " + m_stack.Count);
+            cell.Visited = true;
+            List<CellTest> possibleCell = new List<CellTest>();
+            possibleCell =  cell.NeighborList;
+
+            foreach (CellTest neighbor in possibleCell)
             {
-                possibleCell.Remove(neighbor);
+                if (neighbor.Visited)
+                {
+                    possibleCell.Remove(neighbor);
+                    break;
+                }
+            }
+
+            if (possibleCell.Count <= 0)
+            {
+                m_stack.Pop();
                 break;
             }
-        }
-        //Debug.Log("----->cell possible tri: " + possibleCell.Count);
 
-        //System.Random rand = new System.Random();
-        //int nextCell = rand.Next(0, possibleCell.Count);
 
-        int nextCell = Random.Range(0, possibleCell.Count);
+            int nextCell = Random.Range(0, possibleCell.Count);
 
-        Debug.Log("next cell: " + possibleCell[nextCell].name);
+            Debug.Log(">next cell: " + possibleCell[nextCell].name);
 
-        
+            cell.PathTo(possibleCell[nextCell]);
+            m_stack.Push(possibleCell[nextCell]);
+            tries -= 1;
+        } while (!AllVisited() && tries > 0);
+
+
 
 
     }
+        public int tries;
 
     bool AllVisited()
     {
@@ -202,6 +213,6 @@ public class Maze : MonoBehaviour
         //Cell newCell = Instantiate(cellObject) as Cell;
         //newCell.Coordinates = coordinates;
 
-        cells[coordinates.x, coordinates.y] = newCell;        
+        cells[coordinates.x, coordinates.y] = newCell;
     }
 }
