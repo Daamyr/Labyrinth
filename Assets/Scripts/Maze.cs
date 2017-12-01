@@ -13,17 +13,26 @@ public class Maze : MonoBehaviour
 
     State m_state;
 
-    public Vector2Int size;
     public Vector2Int beginPath;
+    public Vector2Int mazeSize;
+
 
     public GameObject floorPrefab;
     public GameObject wallPrefab;
 
     public CellTest cellObject;
 
-    private CellTest[,] cells;
+    public PathFinding aStar;
 
-    public CellTest[,] CellTest
+    private CellTest[,] cells;
+    private Vector2Int m_size;
+
+    public Vector2Int Size
+    {
+        get { return m_size; }
+    }
+
+    public CellTest[,] Cells
     {
         get { return cells; }
         set { cells = value; }
@@ -32,44 +41,39 @@ public class Maze : MonoBehaviour
     Stack m_path;//chemin final
     Stack m_stack; //stack à dépiller
 
+    void Awake()
+    {
+        m_size = mazeSize;
+    }
+
     // Use this for initialization
     void Start()
     {
         m_state = State.CreatingCells;
         m_stack = new Stack();
+        aStar.Maze = this;
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        /* UTILISER UNE COROUTINE
-    private int renduX;
-    private int renduZ;
-        if(renduX < sizeX)
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            if(renduZ < sizeZ)
-            {
-                CreateCell(renduX, renduZ);
-                renduZ++;
-            }
-            else
-            {
-                renduX++;
-                renduZ = 0;
-            }
-        }
-        */
+            Maze maze = FindObjectOfType<Maze>();
+            Stack path = aStar.SearchPath(maze.Cells[0, 0], maze.Cells[4, 4]);
 
+
+            Debug.Log("nb stack: " + path.Count);
+        }
     }
 
     public float generationStepDelay;
 
     public void KillCells()
     {
-        for (int i = 0; i < size.x; i++)
+        for (int i = 0; i < m_size.x; i++)
         {
-            for (int y = 0; y < size.y; y++)
+            for (int y = 0; y < m_size.y; y++)
             {
                 //if(cells[i,y] != null)
                 //{
@@ -92,11 +96,11 @@ public class Maze : MonoBehaviour
     public IEnumerator Generate()
     {
         WaitForSeconds delay = new WaitForSeconds(generationStepDelay);
-        cells = new CellTest[size.x, size.y];
+        cells = new CellTest[m_size.x, m_size.y];
         //Debug.Log(cells.Length);
-        for (int i = 0; i < size.x; i++)
+        for (int i = 0; i < m_size.x; i++)
         {
-            for (int y = 0; y < size.y; y++)
+            for (int y = 0; y < m_size.y; y++)
             {
                 CreateCell(new Vector2Int(i, y));
                 yield return delay;
@@ -227,13 +231,11 @@ public class Maze : MonoBehaviour
         }
     }
 
-    public int tries;
-
     bool AllVisited()
     {
-        for (int x = 0; x < size.x; x++)
+        for (int x = 0; x < m_size.x; x++)
         {
-            for (int y = 0; y < size.y; y++)
+            for (int y = 0; y < m_size.y; y++)
             {
                 if (cells[x, y].Visited == false)
                 {
@@ -248,9 +250,9 @@ public class Maze : MonoBehaviour
 
     void FindAllNeighbors()
     {
-        for (int x = 0; x < size.x; x++)
+        for (int x = 0; x < m_size.x; x++)
         {
-            for (int y = 0; y < size.y; y++)
+            for (int y = 0; y < m_size.y; y++)
             {
                 cells[x, y].FindNeighbors();
             }
@@ -270,7 +272,14 @@ public class Maze : MonoBehaviour
         newCell.FloorPrefab = floorPrefab;
         newCell.WallPrefab = wallPrefab;
         newCell.name = "Maze Cell " + coordinates.x + ", " + coordinates.y;
+        newCell.Maze = this;
+
+        Node newNode = new Node(this, newCell);
+        newCell.Node = newNode;
         newCell.Generate();
+
+
+        //Debug.Log("dans createCell() node du newCell: " + newCell.Node);
 
         //Cell newCell = Instantiate(cellObject) as Cell;
         //newCell.Coordinates = coordinates;

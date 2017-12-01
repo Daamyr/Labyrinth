@@ -19,7 +19,10 @@ public class CellTest : MonoBehaviour
 
     Hashtable m_neighbors;
 
-    bool m_visited = false;
+    Maze m_maze;
+    Node m_node;
+
+    bool m_visited;
 
     public GameObject debugTo; // dessine un object à chaque case
 
@@ -28,6 +31,17 @@ public class CellTest : MonoBehaviour
     {
         get { return m_visited; }
         set { m_visited = value; }
+    }
+
+    public Maze Maze
+    {
+        set { m_maze = value; }
+    }
+
+    public Node Node
+    {
+        get { return m_node; }
+        set { m_node = value; }
     }
 
     public GameObject FloorPrefab
@@ -117,8 +131,14 @@ public class CellTest : MonoBehaviour
         West
     }
 
+    void Awake()
+    {
+        m_visited = false;
+    }
+
     void Start()
     {
+        //m_node = new Node(m_maze, this);
     }
 
     Way whichNeighbor(CellTest _cell)
@@ -138,7 +158,7 @@ public class CellTest : MonoBehaviour
         return Way.None;
     }
 
-    bool canAccess(CellTest _cell)
+    public bool canAccess(CellTest _cell)
     {
         Way way = whichNeighbor(_cell);
         if (way == Way.None)
@@ -151,7 +171,6 @@ public class CellTest : MonoBehaviour
                     return false;
                 else
                     return true;
-
 
         }
 
@@ -244,8 +263,8 @@ public class CellTest : MonoBehaviour
 
         Vector3 to = _cell.transform.position;
         to.y += m_wallPrefab.transform.localScale.y / 2;
-
-        Instantiate(debugTo, to, new Quaternion());
+        GameObject tmpCube = Instantiate(debugTo, to, new Quaternion());
+        tmpCube.name = "cube";
     }
 
     public void FindNeighbors()

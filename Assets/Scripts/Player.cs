@@ -12,6 +12,8 @@ public class Player : MonoBehaviour
     public float maxSaut = 10f;
     private Action forward, back, right, left, jump;
 
+    //public PathFinding aStar;
+
     enum State
     {
         Standing,
@@ -44,7 +46,7 @@ public class Player : MonoBehaviour
     {
         handleKey();
 
-        if(prevPos != transform.position)
+        if (prevPos != transform.position)
         {
             prevPos = transform.position;
             m_state = State.Walking;
@@ -130,5 +132,14 @@ public class Player : MonoBehaviour
         {
             jump.Execute(this, jump);
         }
+
+        /*if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            Maze maze = FindObjectOfType<Maze>();
+            Stack path = aStar.SearchPath(maze.Cells[0, 0], maze.Cells[9, 9]);
+
+
+            Debug.Log("nb stack: " + path.Count);
+        }*/
     }
 }
