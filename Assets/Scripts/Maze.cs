@@ -60,10 +60,10 @@ public class Maze : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             Maze maze = FindObjectOfType<Maze>();
-            Stack path = aStar.SearchPath(maze.Cells[0, 0], maze.Cells[4, 4]);
+            Stack path = aStar.SearchPath(maze.Cells[0, 0], maze.Cells[0, 4]);
 
-
-            Debug.Log("nb stack: " + path.Count);
+            if (path != null)
+                Debug.Log("nb stack: " + path.Count);
         }
     }
 
@@ -208,7 +208,7 @@ public class Maze : MonoBehaviour
                 }
             } while (again);
 
-           // Debug.Log("-->nb dans la stack: " + m_stack.Count);
+            // Debug.Log("-->nb dans la stack: " + m_stack.Count);
             if (possibleCell.Count <= 0)
             {
                 //Debug.Log("-->DEPOP");
@@ -218,12 +218,12 @@ public class Maze : MonoBehaviour
             }
             else
             {
-            int nextCell = Random.Range(0, possibleCell.Count);
-            //Debug.Log(">next cell: " + possibleCell[nextCell].name);
+                int nextCell = Random.Range(0, possibleCell.Count);
+                //Debug.Log(">next cell: " + possibleCell[nextCell].name);
 
 
-            cell.PathTo(possibleCell[nextCell]);
-            m_stack.Push(possibleCell[nextCell]);
+                cell.PathTo(possibleCell[nextCell]);
+                m_stack.Push(possibleCell[nextCell]);
             }
 
             yield return delay;
@@ -274,8 +274,8 @@ public class Maze : MonoBehaviour
         newCell.name = "Maze Cell " + coordinates.x + ", " + coordinates.y;
         newCell.Maze = this;
 
-        Node newNode = new Node(this, newCell);
-        newCell.Node = newNode;
+        /*Node newNode = new Node(this, newCell);
+        newCell.Node = newNode;*/
         newCell.Generate();
 
 

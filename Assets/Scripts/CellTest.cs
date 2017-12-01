@@ -136,8 +136,15 @@ public class CellTest : MonoBehaviour
         m_visited = false;
     }
 
+    public Node m_nodePrefab;
+
     void Start()
     {
+        Node newNode = Instantiate(m_nodePrefab, transform.position, new Quaternion());
+        newNode.Cell = this;
+        newNode.Maze = m_maze;
+        newNode.name = "Node " + name;
+        m_node = newNode;
         //m_node = new Node(m_maze, this);
     }
 
@@ -168,6 +175,24 @@ public class CellTest : MonoBehaviour
         {
             case Way.North:
                 if (m_wallN != null || _cell.m_wallS)
+                    return false;
+                else
+                    return true;
+
+            case Way.East:
+                if (m_wallE != null || _cell.m_wallW)
+                    return false;
+                else
+                    return true;
+
+            case Way.South:
+                if (m_wallS != null || _cell.m_wallN)
+                    return false;
+                else
+                    return true;
+
+            case Way.West:
+                if (m_wallW != null || _cell.m_wallE)
                     return false;
                 else
                     return true;

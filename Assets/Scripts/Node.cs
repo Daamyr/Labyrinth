@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Node {
+public class Node : MonoBehaviour{
     //G = distance from the last "call"
     //H = distance between the target's path
     float m_G, m_H;
@@ -36,6 +36,7 @@ public class Node {
     public CellTest Cell
     {
         get { return m_belongsTo; }
+        set { m_belongsTo = value; }
     }
 
     public Node Parent
@@ -59,9 +60,10 @@ public class Node {
         }
     }
 
+    //si en monoBehaviour, le constructeur ne sera jamais utilisé
     public Node(Maze _maze, CellTest _belongsTo, float _G = Mathf.Infinity)
     {
-        Debug.Log("dans Node() appartient à : " + _belongsTo.Node);
+        //Debug.Log("dans Node() appartient à : " + _belongsTo.Node);
         m_maze = _maze;
         m_belongsTo = _belongsTo;
         m_G = _G;
