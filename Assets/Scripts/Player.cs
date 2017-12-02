@@ -12,7 +12,7 @@ public class Player : MonoBehaviour
     public float maxSaut = 10f;
     private Action forward, back, right, left, jump;
 
-    //public PathFinding aStar;
+    //public PathFinder aStar;
 
     enum State
     {

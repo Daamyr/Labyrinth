@@ -11,47 +11,50 @@ public class Maze : MonoBehaviour
         Finished
     }
 
+    public GameObject floorPrefab;
+    public GameObject wallPrefab;
+
+    public Cell cellObject;
+
+    public PathFinder aStar;
+    PathFinder m_finder;
     State m_state;
 
     public Vector2Int beginCell;
     public Vector2Int endCell;
     public Vector2Int mazeSize;
 
+    private Cell[,] cells;
+    private Vector2Int m_size;
+    Stack m_path;//chemin final
+    Stack m_stack; //stack à dépiller
+
+    #region Getters/Setters
     public State CurrentState
     {
         get { return m_state; }
         set { m_state = value; }
     }
 
-    public GameObject floorPrefab;
-    public GameObject wallPrefab;
 
-    public CellTest cellObject;
-
-    public PathFinding aStar;
-    PathFinding m_finder;
-
-    public PathFinding Finder
+    public PathFinder Finder
     {
         get { return m_finder; }
     }
 
-    private CellTest[,] cells;
-    private Vector2Int m_size;
 
     public Vector2Int Size
     {
         get { return m_size; }
     }
 
-    public CellTest[,] Cells
+    public Cell[,] Cells
     {
         get { return cells; }
         set { cells = value; }
     }
+    #endregion
 
-    Stack m_path;//chemin final
-    Stack m_stack; //stack à dépiller
 
     void Awake()
     {
@@ -72,7 +75,7 @@ public class Maze : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             if (m_state != State.CreatingCells)
-                m_finder.StartCoroutine("PathFinder");
+                m_finder.StartCoroutine("FindPath");
         }
     }
 
@@ -100,7 +103,7 @@ public class Maze : MonoBehaviour
     public IEnumerator Generate()
     {
         WaitForSeconds delay = new WaitForSeconds(generationStepDelay);
-        cells = new CellTest[m_size.x, m_size.y];
+        cells = new Cell[m_size.x, m_size.y];
         for (int i = 0; i < m_size.x; i++)
         {
             for (int y = 0; y < m_size.y; y++)
@@ -129,13 +132,13 @@ public class Maze : MonoBehaviour
     void CreatePath()
     {
         /** JEU DE CONNAISSANCES
-         * CellTest begin = cells[2, 2]; possède 4 voisins soit:
+         * Cell begin = cells[2, 2]; possède 4 voisins soit:
          *  -cells[1,2]
          *  -cells[1,2]
          *  -cells[1,2]
          *  -cells[3,2]
          *  
-         *  * CellTest begin = cells[0, 1]; possède 3 voisins soit:
+         *  * Cell begin = cells[0, 1]; possède 3 voisins soit:
          *  -cells[0,0]
          *  -cells[0,2]
          *  -cells[1,1]
@@ -153,7 +156,7 @@ public class Maze : MonoBehaviour
         while (m_state == State.CreatingPath)
         {
             WaitForSeconds delay = new WaitForSeconds(huntDelay);
-            CellTest cell = m_stack.Peek() as CellTest;
+            Cell cell = m_stack.Peek() as Cell;
             cell.Visited = true;
 
             if (AllVisited())
@@ -162,14 +165,14 @@ public class Maze : MonoBehaviour
                 yield break;
             }
 
-            List<CellTest> possibleCell = new List<CellTest>();
+            List<Cell> possibleCell = new List<Cell>();
             possibleCell = cell.NeighborList;
 
             bool again;
             do
             {
                 again = false;
-                foreach (CellTest neighbor in possibleCell)
+                foreach (Cell neighbor in possibleCell)
                 {
                     if (neighbor.Visited)
                     {
@@ -207,7 +210,7 @@ public class Maze : MonoBehaviour
                                                    0f,
                                                    coordinates.y * floorPrefab.transform.lossyScale.z + floorPrefab.transform.lossyScale.z);
 
-        CellTest newCell = Instantiate(cellObject, position, new Quaternion()) as CellTest;
+        Cell newCell = Instantiate(cellObject, position, new Quaternion()) as Cell;
 
         newCell.Coordinates = position;
         newCell.FloorPrefab = floorPrefab;

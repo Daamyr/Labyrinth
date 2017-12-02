@@ -11,13 +11,13 @@ public class CubeFall : MonoBehaviour {
     public GameObject floorPrefab;
     public GameObject wallPrefab;
 
-    CellTest test;
+    Cell test;
 	
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.LeftShift)) {
 			this.GetComponents<Rigidbody> () [0].isKinematic = false;
-            /*test = new CellTest(new Vector3(10, 0, 10));
+            /*test = new Cell(new Vector3(10, 0, 10));
             test.FloorPrefab = floorPrefab;
             test.WallPrefab = wallPrefab;
             Debug.Log("Update-> " + test.FloorPrefab);

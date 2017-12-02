@@ -19,9 +19,9 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4748810545910276}
-  - component: {fileID: 114820915205327888}
+  - component: {fileID: 114562705619889232}
   m_Layer: 0
-  m_Name: PathFinding
+  m_Name: PathFinder
   m_TagString: A*
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -40,7 +40,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114820915205327888
+--- !u!114 &114562705619889232
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -48,7 +48,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1837797869899928}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b45220d191c41bd42ba4f69e0300d3fc, type: 3}
+  m_Script: {fileID: 11500000, guid: e7b2000e854f2b94f8006c2b1a762498, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  delayFinder: 0.05
+  delayFinder: 0.1

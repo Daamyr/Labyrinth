@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PathFinding : MonoBehaviour
+public class PathFinder : MonoBehaviour
 {
 
     List<Node> m_openList, m_closedList;//uniquement les nodes
@@ -18,6 +18,7 @@ public class PathFinding : MonoBehaviour
         NotFound
     }
 
+    #region Getters/Setters
     public State CurrentState
     {
         get { return m_state; }
@@ -33,17 +34,18 @@ public class PathFinding : MonoBehaviour
         get { return m_path; }
     }
 
-    public CellTest From
+    public Cell From
     {
         get { return m_from; }
         set { m_from = value; }
     }
 
-    public CellTest To
+    public Cell To
     {
         get { return m_to; }
         set { m_to = value; }
     }
+    #endregion
 
     //les variables settée dans awake() restent même après que le programme se soit fermé
     void Awake()
@@ -68,7 +70,7 @@ public class PathFinding : MonoBehaviour
     }
 
 
-    Stack reconstructPath(CellTest _start, Node _solution)
+    Stack reconstructPath(Cell _start, Node _solution)
     {
         //Debug.Log("_start: " + _start.name + " | _currentNode: " + _currentNode.name + " | _currentNode.Parent: " + _currentNode.Parent);
         Node node = _solution;
@@ -94,10 +96,10 @@ public class PathFinding : MonoBehaviour
      * */
 
     //a redéfinir avant chaque tentative de find
-    CellTest m_from;
-    CellTest m_to;
+    Cell m_from;
+    Cell m_to;
 
-    public IEnumerator PathFinder()
+    public IEnumerator FindPath()
     {
         m_openList = null;
         m_closedList = null;
@@ -187,7 +189,7 @@ public class PathFinding : MonoBehaviour
      * Ancienne version:
      * Celle-ci ne se fait pas sur plusieurs frame, donc elle gèle le system pour faire le calcul
     */
-    public Stack SearchPath(CellTest _from, CellTest _to)
+    public Stack SearchPath(Cell _from, Cell _to)
     {
         m_path = new Stack();
         m_openList = new List<Node>();
@@ -272,13 +274,13 @@ public class PathFinding : MonoBehaviour
         }
     }
 
-    void setAllNodes(CellTest _target)
+    void setAllNodes(Cell _target)
     {
         for (int x = 0; x < m_maze.Size.x; x++)
         {
             for (int y = 0; y < m_maze.Size.y; y++)
             {
-                CellTest tmpCell = m_maze.Cells[x, y];
+                Cell tmpCell = m_maze.Cells[x, y];
                 tmpCell.Node.G = Mathf.Infinity;
                 tmpCell.Node.H = Vector3.Distance(tmpCell.transform.position, _target.transform.position);
             }

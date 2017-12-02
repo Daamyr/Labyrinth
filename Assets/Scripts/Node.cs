@@ -8,11 +8,12 @@ public class Node : MonoBehaviour{
     float m_G, m_H;
     Node m_parent;
     Maze m_maze;
-    CellTest m_belongsTo;
+    Cell m_belongsTo;
 
+    #region Getters/Setters
     public Maze Maze
     {
-        get { return m_maze; }
+        //get { return m_maze; }
         set { m_maze = value; }
     }
 
@@ -33,7 +34,7 @@ public class Node : MonoBehaviour{
         get { return m_G + m_H; }
     }
 
-    public CellTest Cell
+    public Cell Cell
     {
         get { return m_belongsTo; }
         set { m_belongsTo = value; }
@@ -59,22 +60,11 @@ public class Node : MonoBehaviour{
             return list;
         }
     }
-
-    //si en monoBehaviour, le constructeur ne sera jamais utilisé
-    public Node(Maze _maze, CellTest _belongsTo, float _G = Mathf.Infinity)
-    {
-        //Debug.Log("dans Node() appartient à : " + _belongsTo.Node);
-        m_maze = _maze;
-        m_belongsTo = _belongsTo;
-        m_G = _G;
-        m_H = 0;
-        m_parent = null;
-    }
+    #endregion
 
     // Use this for initialization
     void Start () {
         m_G = Mathf.Infinity;
-
     }
 	
 	// Update is called once per frame

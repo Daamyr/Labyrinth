@@ -27,7 +27,7 @@ public class GameController : MonoBehaviour {
     }
 
 	private void RestartGame () {
-        if (instance.Finder.CurrentState == PathFinding.State.Finding)
+        if (instance.Finder.CurrentState == PathFinder.State.Finding)
             return;
 
         instance.CurrentState = Maze.State.CreatingCells;
