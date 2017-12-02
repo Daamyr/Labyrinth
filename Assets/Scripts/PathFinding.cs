@@ -9,10 +9,40 @@ public class PathFinding : MonoBehaviour
     Stack m_path;
     Maze m_maze;
     Node m_activeNode;
+    State m_state;
+
+    public enum State
+    {
+        Finding,
+        Found,
+        NotFound
+    }
+
+    public State CurrentState
+    {
+        get { return m_state; }
+    }
 
     public Maze Maze
     {
         set { m_maze = value; }
+    }
+
+    public Stack Path
+    {
+        get { return m_path; }
+    }
+
+    public CellTest From
+    {
+        get { return m_from; }
+        set { m_from = value; }
+    }
+
+    public CellTest To
+    {
+        get { return m_to; }
+        set { m_to = value; }
     }
 
     //les variables settée dans awake() restent même après que le programme se soit fermé
@@ -25,7 +55,10 @@ public class PathFinding : MonoBehaviour
     {
         m_openList = null;
         m_closedList = null;
+
         m_path = new Stack();
+        m_openList = new List<Node>();
+        m_closedList = new List<Node>();
     }
 
     // Update is called once per frame
@@ -33,6 +66,7 @@ public class PathFinding : MonoBehaviour
     {
 
     }
+
 
     Stack reconstructPath(CellTest _start, Node _solution)
     {
@@ -42,69 +76,144 @@ public class PathFinding : MonoBehaviour
 
         while (node.Parent != null)
         {
-            //Debug.Log("1->node: " + node.name + " | node.Parent: " + node.Parent.name);
             path.Push(node);
             node = node.Parent;
-            //Debug.Log("2->node: " + node.name + " | node.Parent: " + node.Parent.name);
         }
 
         m_path = path;
-
-        drawPath();
         return path;
     }
 
-    void drawPath()
-    {
-        Stack tmp_path = m_path;
-        Node tmp_node = tmp_path.Pop() as Node;
-        bool draw = true;
-        while (draw)
-        {
-            Debug.DrawLine(tmp_node.Cell.transform.position + new Vector3(0, 5, 0), tmp_node.Parent.transform.position + new Vector3(0, 5, 0), Color.red, 1f, false);
-            if (tmp_path.Count > 0)
-                tmp_node = tmp_path.Pop() as Node;
-            else
-                draw = false;
-        }
-    }
+    public float delayFinder = 0.5f;
 
-    public Stack SearchPath(CellTest _from, CellTest _to)
+    /**
+     * TODO: recréer un object à chaque fois qu'on a un finder à faire OU une fois au debut puis seulement la coroutine ?
+     * dans le start, lancer la coroutine
+     * calculer le path au fur est à mesure
+     * conserver le path à la fin
+     * */
+
+    //a redéfinir avant chaque tentative de find
+    CellTest m_from;
+    CellTest m_to;
+
+    public IEnumerator PathFinder()
     {
+        m_openList = null;
+        m_closedList = null;
+        m_path = null;
+
+        m_path = new Stack();
         m_openList = new List<Node>();
         m_closedList = new List<Node>();
 
-        setAllH(_to);
+        m_state = State.Finding;
+
+        setAllNodes(m_to);
+        m_activeNode = m_from.Node;
+        m_activeNode.G = 0;
+        m_openList.Add(m_activeNode);
+
+
+        while (m_openList.Count > 0 && m_state == State.Finding)
+        {
+            WaitForSeconds delay = new WaitForSeconds(delayFinder);
+
+            Node fastestWay = m_openList[m_openList.Count - 1] as Node;
+            for (int i = 0; i < m_openList.Count; i++)
+            {
+                //verify the solution
+                if (m_openList[i] == m_to.Node)
+                {
+                    m_openList[i].Parent = m_activeNode;
+                    m_activeNode = m_openList[i];
+                    m_path.Push(m_activeNode);
+                    m_state = State.Found;
+                    Debug.Log("------->PATH FOUND !!!");
+                    reconstructPath(m_from, m_activeNode);
+                    drawPath();
+                    yield break;
+                }
+                //else it continues
+                else if (m_openList[i].F < fastestWay.F)
+                {
+                    fastestWay = m_openList[i];
+                }
+            }
+
+            m_activeNode = fastestWay;
+
+            m_openList.Remove(m_activeNode);
+            m_closedList.Add(m_activeNode);
+
+            foreach (var node in m_activeNode.Neighbors)
+            {
+                float tmp_G = m_activeNode.G + Vector3.Distance(m_activeNode.Cell.transform.position, node.Cell.transform.position);
+
+                if (m_closedList.Contains(node) == false)
+                {
+                    if (m_activeNode.Cell.canAccess(node.Cell))
+                    {
+                        if (m_openList.Contains(node) == false)
+                        {
+                            m_openList.Add(node);
+                        }
+                        if (tmp_G < node.G)
+                        {
+                            node.Parent = m_activeNode;
+                            node.G = tmp_G;
+                            m_path.Push(node);
+
+                            drawPath();
+                        }
+                    }
+                }
+            }
+            yield return delay;
+        }
+
+        if (m_state == State.Finding)
+        {
+            m_state = State.NotFound;
+            m_path = null;
+            Debug.Log("Pas de chemin trouvé entre " + m_from.name + " et " + m_to.name);
+        }
+
+
+
+    }
+
+    /**
+     * Ancienne version:
+     * Celle-ci ne se fait pas sur plusieurs frame, donc elle gèle le system pour faire le calcul
+    */
+    public Stack SearchPath(CellTest _from, CellTest _to)
+    {
+        m_path = new Stack();
+        m_openList = new List<Node>();
+        m_closedList = new List<Node>();
+        setAllNodes(_to);
         m_activeNode = _from.Node;
         m_openList.Add(m_activeNode);
 
         while (m_openList.Count > 0)
         {
             Node fastestWay = m_openList[m_openList.Count - 1] as Node;
-            /*foreach (Node node in m_openList)
-            {
-                if (node.F < fastestWay.F)
-                {
-                    fastestWay = node;
-                }
-            }*/
-
             for (int i = 0; i < m_openList.Count; i++)
             {
-                if (m_openList[i].F < fastestWay.F)
+                //verify the solution
+                if (m_openList[i] == _to.Node)
+                {
+                    m_openList[i].Parent = m_activeNode;
+                    m_activeNode = m_openList[i];
+                    m_path = reconstructPath(_from, m_activeNode);
+                    return m_path;
+                }
+                //else it continues
+                else if (m_openList[i].F < fastestWay.F)
                 {
                     fastestWay = m_openList[i];
                 }
-            }
-
-
-            //verify the solution
-            if (fastestWay == _to.Node)
-            {
-                fastestWay.Parent = m_activeNode;
-                m_activeNode = fastestWay;
-                m_path = reconstructPath(_from, m_activeNode);
-                return m_path;
             }
 
             m_activeNode = fastestWay;
@@ -148,14 +257,29 @@ public class PathFinding : MonoBehaviour
         return null;
     }
 
-    void setAllH(CellTest _target)
+    void drawPath()
     {
-        //Debug.Log("maze: " + m_maze + " target: " + _target.Node);
+        Stack tmp_path = m_path;
+        Node tmp_node = tmp_path.Pop() as Node;
+        bool draw = true;
+        while (draw)
+        {
+            Debug.DrawLine(tmp_node.Cell.transform.position + new Vector3(0, 5, 0), tmp_node.Parent.transform.position + new Vector3(0, 5, 0), Color.red, 1f, false);
+            if (tmp_path.Count > 0)
+                tmp_node = tmp_path.Pop() as Node;
+            else
+                draw = false;
+        }
+    }
+
+    void setAllNodes(CellTest _target)
+    {
         for (int x = 0; x < m_maze.Size.x; x++)
         {
             for (int y = 0; y < m_maze.Size.y; y++)
             {
                 CellTest tmpCell = m_maze.Cells[x, y];
+                tmpCell.Node.G = Mathf.Infinity;
                 tmpCell.Node.H = Vector3.Distance(tmpCell.transform.position, _target.transform.position);
             }
         }

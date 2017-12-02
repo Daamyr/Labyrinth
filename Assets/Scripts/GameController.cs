@@ -23,15 +23,17 @@ public class GameController : MonoBehaviour {
 	}
 
 	private void BeginGame () {
-		//instance = Instantiate(maze) as Maze;
         StartCoroutine(instance.Generate());
     }
 
 	private void RestartGame () {
+        if (instance.Finder.CurrentState == PathFinding.State.Finding)
+            return;
+
+        instance.CurrentState = Maze.State.CreatingCells;
+
         StopAllCoroutines();
         instance.KillCells();
-        //maze.CellTest = null;
-		//Destroy(instance.gameObject);
 		BeginGame();
 	}
 

@@ -331,11 +331,12 @@ public class CellTest : MonoBehaviour
 
     public void Destroy()
     {
-        Destroy(m_floor);
-        Destroy(m_wallN);
-        Destroy(m_wallE);
-        Destroy(m_wallS);
-        Destroy(m_wallW);
+        Destroy(m_node.gameObject);
+        Destroy(m_floor.gameObject);
+        Destroy(m_wallN.gameObject);
+        Destroy(m_wallE.gameObject);
+        Destroy(m_wallS.gameObject);
+        Destroy(m_wallW.gameObject);
     }
 
     void SetNames()

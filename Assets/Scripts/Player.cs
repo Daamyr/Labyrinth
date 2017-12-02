@@ -70,7 +70,7 @@ public class Player : MonoBehaviour
             pasGauche = !pasGauche;
         }
 
-        ocillation();
+        //ocillation();
     }
 
     void ocillation()
