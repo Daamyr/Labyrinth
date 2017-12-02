@@ -34,20 +34,39 @@ public class PathFinding : MonoBehaviour
 
     }
 
-    Stack reconstructPath(CellTest _start, Node _currentNode)
+    Stack reconstructPath(CellTest _start, Node _solution)
     {
-        Debug.Log("_start: " + _start.name + " | _currentNode: " + _currentNode.name + " | _currentNode.Parent: " + _currentNode.Parent);
-
-        Node node = _currentNode;
+        //Debug.Log("_start: " + _start.name + " | _currentNode: " + _currentNode.name + " | _currentNode.Parent: " + _currentNode.Parent);
+        Node node = _solution;
         Stack path = new Stack();
 
-        while (node.Parent != null && node != _start.Node)
+        while (node.Parent != null)
         {
+            //Debug.Log("1->node: " + node.name + " | node.Parent: " + node.Parent.name);
             path.Push(node);
             node = node.Parent;
+            //Debug.Log("2->node: " + node.name + " | node.Parent: " + node.Parent.name);
         }
 
+        m_path = path;
+
+        drawPath();
         return path;
+    }
+
+    void drawPath()
+    {
+        Stack tmp_path = m_path;
+        Node tmp_node = tmp_path.Pop() as Node;
+        bool draw = true;
+        while (draw)
+        {
+            Debug.DrawLine(tmp_node.Cell.transform.position + new Vector3(0, 5, 0), tmp_node.Parent.transform.position + new Vector3(0, 5, 0), Color.red, 1f, false);
+            if (tmp_path.Count > 0)
+                tmp_node = tmp_path.Pop() as Node;
+            else
+                draw = false;
+        }
     }
 
     public Stack SearchPath(CellTest _from, CellTest _to)
@@ -62,23 +81,36 @@ public class PathFinding : MonoBehaviour
         while (m_openList.Count > 0)
         {
             Node fastestWay = m_openList[m_openList.Count - 1] as Node;
-            foreach (Node node in m_openList)
+            /*foreach (Node node in m_openList)
             {
                 if (node.F < fastestWay.F)
+                {
                     fastestWay = node;
+                }
+            }*/
+
+            for (int i = 0; i < m_openList.Count; i++)
+            {
+                if (m_openList[i].F < fastestWay.F)
+                {
+                    fastestWay = m_openList[i];
+                }
+            }
+
+
+            //verify the solution
+            if (fastestWay == _to.Node)
+            {
+                fastestWay.Parent = m_activeNode;
+                m_activeNode = fastestWay;
+                m_path = reconstructPath(_from, m_activeNode);
+                return m_path;
             }
 
             m_activeNode = fastestWay;
 
-            //verify the solution
-            if (m_activeNode.Cell.transform.position == _to.transform.position)
-            {
-                m_path = reconstructPath(_from, m_activeNode);
-                return m_path;
-            }
             m_openList.Remove(m_activeNode);
             m_closedList.Add(m_activeNode);
-            Debug.Log("yo");
 
             foreach (var node in m_activeNode.Neighbors)
             {
@@ -87,6 +119,7 @@ public class PathFinding : MonoBehaviour
                 //Debug.Log("node: " + m_activeNode.name + " | neighbor: " + node.name);
                 //Debug.Log("m_openList.Contains(node): " + m_openList.Contains(node));
                 //Debug.Log("m_activeNode.Cell.canAccess(node.Cell): " + m_activeNode.Cell.canAccess(node.Cell));
+                //Debug.Log("tmp_G > node.G: " + (tmp_G > node.G) + " | node.G: " + node.G + " | tmp_G: " + tmp_G);
 
                 if (m_closedList.Contains(node))
                     continue;

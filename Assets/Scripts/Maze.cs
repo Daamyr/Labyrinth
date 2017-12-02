@@ -13,7 +13,8 @@ public class Maze : MonoBehaviour
 
     State m_state;
 
-    public Vector2Int beginPath;
+    public Vector2Int beginCell;
+    public Vector2Int endCell;
     public Vector2Int mazeSize;
 
 
@@ -57,10 +58,16 @@ public class Maze : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        try
+        {
+            //Debug.DrawLine(cells[0, 0].transform.position + new Vector3(0, 10, 0), cells[0, 2].transform.position + new Vector3(0, 10, 0), Color.red, 50f,false);
+        }
+        catch{}
+
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             Maze maze = FindObjectOfType<Maze>();
-            Stack path = aStar.SearchPath(maze.Cells[0, 0], maze.Cells[0, 4]);
+            Stack path = aStar.SearchPath(maze.Cells[beginCell.x, beginCell.y], maze.Cells[endCell.x, endCell.y]);
 
             if (path != null)
                 Debug.Log("nb stack: " + path.Count);
@@ -109,7 +116,7 @@ public class Maze : MonoBehaviour
 
         m_state = State.CreatingPath; //execute one when all cells are create
         m_stack = new Stack();
-        m_stack.Push(cells[beginPath.x, beginPath.y]);
+        m_stack.Push(cells[beginCell.x, beginCell.y]);
         CreatePath();
     }
 

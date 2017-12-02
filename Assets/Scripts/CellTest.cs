@@ -286,6 +286,7 @@ public class CellTest : MonoBehaviour
         }
         */
 
+
         Vector3 to = _cell.transform.position;
         to.y += m_wallPrefab.transform.localScale.y / 2;
         GameObject tmpCube = Instantiate(debugTo, to, new Quaternion());

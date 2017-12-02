@@ -51,8 +51,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f7a7c64fb9e7ba4fbcc8bf12550b794, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  beginPath: {x: 0, y: 0}
-  mazeSize: {x: 1, y: 5}
+  beginCell: {x: 0, y: 0}
+  endCell: {x: 4, y: 4}
+  mazeSize: {x: 5, y: 5}
   floorPrefab: {fileID: 1977234794633560, guid: 70376d065a4281d4089da61118ac1880,
     type: 2}
   wallPrefab: {fileID: 1519036981174886, guid: 3d257d0b4efd5e247b57fe99ae8ae78a, type: 2}
