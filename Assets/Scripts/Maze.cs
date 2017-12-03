@@ -39,12 +39,10 @@ public class Maze : MonoBehaviour
         set { m_state = value; }
     }
 
-
     public PathFinder Finder
     {
         get { return m_finder; }
     }
-
 
     public Vector2Int Size
     {
@@ -77,24 +75,22 @@ public class Maze : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            if (m_state != State.CreatingCells)
-                m_finder.StartCoroutine("FindPath");
+            //if (m_state != State.CreatingCells)
+            //    m_finder.StartCoroutine("FindPath");
         }
 
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            if (m_state != State.CreatingCells)
-            {
-                PathFollower pathFollower = Instantiate(prefabFollower);
+        //if (Input.GetKeyDown(KeyCode.F))
+        //{
+        //    if (m_state != State.CreatingCells)
+        //    {
+        //        PathFollower pathFollower = Instantiate(prefabFollower);
 
-                pathFollower.Path = m_finder.PathList;
+        //        pathFollower.Path = m_finder.PathList;
 
-                pathFollower.StartCoroutine("FollowPath");
-            }
-        }
+        //        pathFollower.StartCoroutine("FollowPath");
+        //    }
+        //}
     }
-
-
 
     public float generationStepDelay;
 
@@ -131,7 +127,7 @@ public class Maze : MonoBehaviour
         }
 
         m_stack = new Stack();
-        initFinder();
+        //initFinder();
         m_stack.Push(cells[beginCell.x, beginCell.y]);
         CreatePath();
     }

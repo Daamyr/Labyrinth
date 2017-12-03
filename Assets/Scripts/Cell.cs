@@ -78,6 +78,11 @@ public class Cell : MonoBehaviour
         set { m_coordinates = value; }
     }
 
+    public GameObject Floor
+    {
+        get { return m_floor; }
+    }
+
     public Cell(Vector3 _coordinates)
     {
         m_coordinates = _coordinates;

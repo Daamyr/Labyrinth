@@ -4,13 +4,28 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-
+    
     public new GameObject gameObject;
     public GameObject camera;
 
     public float forceSaut = 25f;
     public float maxSaut = 10f;
     private Action forward, back, right, left, jump;
+
+    private GameController gameController;
+
+    public GameController GameController
+    {
+        set { gameController = value; }
+    }
+
+    public Vector2Int CurrentPosition
+    {
+        get { return currentPosition; }
+    }
+
+    Collider lastPosition;
+    Vector2Int currentPosition;
 
     //public PathFinder aStar;
 
@@ -29,7 +44,6 @@ public class Player : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        m_timer = timer;
         m_state = State.Standing;
 
         forward = new Forward();
@@ -45,50 +59,40 @@ public class Player : MonoBehaviour
     void FixedUpdate()
     {
         handleKey();
-
-        if (prevPos != transform.position)
-        {
-            prevPos = transform.position;
-            m_state = State.Walking;
-        }
-        else
-        {
-            m_state = State.Standing;
-        }
-
-        //Vector3 pos = camera.transform.position;
-        //pos.y += 2f * Time.deltaTime;
-
-        //camera.transform.position = pos;
-
-        //camera.transform.Rotate(0, 0, angleZ);
-
-        m_timer -= Time.deltaTime;
-        if (m_timer <= 0)
-        {
-            m_timer = timer;
-            pasGauche = !pasGauche;
-        }
-
-        //ocillation();
+        checkPostion();
     }
-
-    void ocillation()
+    public float range = 1;
+    void checkPostion()
     {
-        Vector3 pos = camera.transform.position;
-        if (m_state == State.Walking)
-        {
-            if (pasGauche)
-            {
-                pos.y = transform.position.y + angle;
-            }
-            else
-            {
-                pos.y = transform.position.y - angle;
-            }
+        RaycastHit hit;
 
-            camera.transform.position = pos;
+        if (Physics.Raycast(transform.position, -Vector3.up, out hit, range))
+        {
+            if (lastPosition == null)
+                lastPosition = hit.collider;
+            if (hit.collider != lastPosition)
+            {
+                Cell[,] cells = gameController.Cells;
+
+                for (int x = 0; x < gameController.MazeSize.x; x++)
+                {
+                    for (int y = 0; y < gameController.MazeSize.y; y++)
+                    {
+                        if (cells[x, y].Floor.GetComponent<Collider>() == hit.collider)
+                        {
+                            lastPosition = hit.collider;
+                            currentPosition = new Vector2Int(x, y);
+                            gameController.updatePath();
+                            return;
+                        }
+                    }
+                }
+            }
         }
+
+
+
+
     }
 
     public void OnCollisionEnter(Collision col)
@@ -98,11 +102,6 @@ public class Player : MonoBehaviour
         //player.GetComponents<hello> () [0].salut ();
 
     }
-
-    public float timer = 0.5f;
-    float m_timer;
-    bool pasGauche = false;
-    public float angle = 5f;
 
     public void handleKey()
     {
@@ -133,13 +132,19 @@ public class Player : MonoBehaviour
             jump.Execute(this, jump);
         }
 
-        /*if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (Input.GetKeyDown(KeyCode.F))
         {
-            Maze maze = FindObjectOfType<Maze>();
-            Stack path = aStar.SearchPath(maze.Cells[0, 0], maze.Cells[9, 9]);
+            if (gameController.MazeInstance.CurrentState !=  Maze.State.CreatingCells)
+            {
+                PathFollower pathFollower = Instantiate(gameController.pathFollower, transform.position, transform.rotation);
 
+                if(gameController.Path.Count > 0)
+                {
+                pathFollower.Path = gameController.Path;
 
-            Debug.Log("nb stack: " + path.Count);
-        }*/
+                pathFollower.StartCoroutine("FollowPath");
+                }
+            }
+        }
     }
 }

@@ -25,7 +25,7 @@ public class PathFollower : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        ball = Instantiate(ballPrefab);
+        ball = Instantiate(ballPrefab, transform);
         ball.Target = gameObject;
         //m_path = new List<Vector3>();
     }

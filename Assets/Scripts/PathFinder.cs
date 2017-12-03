@@ -26,7 +26,7 @@ public class PathFinder : MonoBehaviour
 
     public Maze Maze
     {
-        set { m_maze = value; }
+        set {  m_maze = value; Debug.Log("salut " + m_maze); }
     }
 
     public Stack Path
@@ -103,7 +103,7 @@ public class PathFinder : MonoBehaviour
         Node node = _solution;
         Stack path = new Stack();
 
-        while (node.Parent != null)
+        while (node != _start.Node)
         {
             path.Push(node);
             node = node.Parent;
@@ -128,6 +128,12 @@ public class PathFinder : MonoBehaviour
 
     public IEnumerator FindPath()
     {
+        if (m_from == null || m_to == null)
+        {
+            Debug.Log(" mauvais paramètre ");
+            yield break;
+        }
+
         Debug.Log("============= Calcul de l'itineraire ============= ");
         m_openList = null;
         m_closedList = null;
@@ -199,6 +205,8 @@ public class PathFinder : MonoBehaviour
                     }
                 }
             }
+            Debug.Log("fin while | path.count:  " + m_path.Count);
+
             yield return delay;
         }
 
@@ -236,6 +244,7 @@ public class PathFinder : MonoBehaviour
                     m_openList[i].Parent = m_activeNode;
                     m_activeNode = m_openList[i];
                     m_path = reconstructPath(_from, m_activeNode);
+                    drawPath();
                     return m_path;
                 }
                 //else it continues
@@ -288,6 +297,9 @@ public class PathFinder : MonoBehaviour
 
     void drawPath()
     {
+        if (m_path.Count <= 0)
+            return;
+
         Stack tmp_path = m_path.Clone() as Stack;
         Node tmp_node = tmp_path.Pop() as Node;
         bool draw = true;
@@ -298,11 +310,13 @@ public class PathFinder : MonoBehaviour
                 tmp_node = tmp_path.Pop() as Node;
             else
                 draw = false;
+            
         }
     }
 
     void setAllNodes(Cell _target)
     {
+        //Debug.Log(">>>>> " + m_maze);
         for (int x = 0; x < m_maze.Size.x; x++)
         {
             for (int y = 0; y < m_maze.Size.y; y++)
