@@ -60,5 +60,7 @@ MonoBehaviour:
   beginCell: {x: 0, y: 0}
   endCell: {x: 14, y: 14}
   mazeSize: {x: 15, y: 15}
-  generationStepDelay: 0
+  prefabFollower: {fileID: 114409352059370092, guid: 74b0cb2c709133e4e95e8ff916781a6c,
+    type: 2}
   huntDelay: 0
+  generationStepDelay: 0

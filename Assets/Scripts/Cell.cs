@@ -22,6 +22,7 @@ public class Cell : MonoBehaviour
     Maze m_maze;
     Node m_node;
 
+    public Node m_nodePrefab;
     bool m_visited;
 
     public GameObject debugTo; // dessine un object à chaque case
@@ -136,7 +137,6 @@ public class Cell : MonoBehaviour
         m_visited = false;
     }
 
-    public Node m_nodePrefab;
 
     void Start()
     {
@@ -259,38 +259,12 @@ public class Cell : MonoBehaviour
                 Destroy(_cell.m_wallE);
                 break;
         }
-        /*
-        if (_cell == NeighborNorth)
-        {
-            //Debug.Log("--->to the north");
-            Destroy(m_wallN);
-            Destroy(_cell.m_wallS);
-        }
-        if (_cell == NeighborEast)
-        {
-            //Debug.Log("--->to the east");
-            Destroy(m_wallE);
-            Destroy(_cell.m_wallW);
-        }
-        if (_cell == NeighborSouth)
-        {
-            //Debug.Log("--->to the south");
-            Destroy(m_wallS);
-            Destroy(_cell.m_wallN);
-        }
-        if (_cell == NeighborWest)
-        {
-            //Debug.Log("--->to the west");
-            Destroy(m_wallW);
-            Destroy(_cell.m_wallE);
-        }
-        */
 
 
-        Vector3 to = _cell.transform.position;
-        to.y += m_wallPrefab.transform.localScale.y / 2;
-        GameObject tmpCube = Instantiate(debugTo, to, new Quaternion());
-        tmpCube.name = "cube";
+        //Vector3 to = _cell.transform.position;
+        //to.y += m_wallPrefab.transform.localScale.y / 2;
+        //GameObject tmpCube = Instantiate(debugTo, to, new Quaternion());
+        //tmpCube.name = "cube";
     }
 
     public void FindNeighbors()

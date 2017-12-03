@@ -29,6 +29,9 @@ public class Maze : MonoBehaviour
     Stack m_path;//chemin final
     Stack m_stack; //stack à dépiller
 
+    public PathFollower prefabFollower;
+    public float huntDelay = 1;
+
     #region Getters/Setters
     public State CurrentState
     {
@@ -77,7 +80,21 @@ public class Maze : MonoBehaviour
             if (m_state != State.CreatingCells)
                 m_finder.StartCoroutine("FindPath");
         }
+
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            if (m_state != State.CreatingCells)
+            {
+                PathFollower pathFollower = Instantiate(prefabFollower);
+
+                pathFollower.Path = m_finder.PathList;
+
+                pathFollower.StartCoroutine("FollowPath");
+            }
+        }
     }
+
+
 
     public float generationStepDelay;
 
@@ -131,25 +148,11 @@ public class Maze : MonoBehaviour
 
     void CreatePath()
     {
-        /** JEU DE CONNAISSANCES
-         * Cell begin = cells[2, 2]; possède 4 voisins soit:
-         *  -cells[1,2]
-         *  -cells[1,2]
-         *  -cells[1,2]
-         *  -cells[3,2]
-         *  
-         *  * Cell begin = cells[0, 1]; possède 3 voisins soit:
-         *  -cells[0,0]
-         *  -cells[0,2]
-         *  -cells[1,1]
-         */
-
         FindAllNeighbors();
         m_state = State.CreatingPath;
         StartCoroutine("hunt");
 
     }
-    public float huntDelay = 1;
     public IEnumerator hunt()
     {
         m_state = State.CreatingPath;
@@ -235,7 +238,7 @@ public class Maze : MonoBehaviour
             }
         }
 
-        Debug.Log("C FINI LOL");
+        //Debug.Log("C FINI LOL");
         return true;
     }
 

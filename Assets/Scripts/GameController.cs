@@ -5,14 +5,16 @@ using UnityEngine;
 public class GameController : MonoBehaviour {
 
 	public Maze maze;
+    public Player player;
 
-	private Maze instance;
+	private Maze instanceMaze;
+    private Player instancePlayer;
 
 	void Awake(){
 	}
 
 	void Start(){
-		instance = Instantiate (maze) as Maze;//cast en Maze sinon il retourne un object
+        instanceMaze = Instantiate (maze) as Maze;//cast en Maze sinon il retourne un object
         BeginGame();
 	}
 
@@ -23,17 +25,17 @@ public class GameController : MonoBehaviour {
 	}
 
 	private void BeginGame () {
-        StartCoroutine(instance.Generate());
+        StartCoroutine(instanceMaze.Generate());
     }
 
 	private void RestartGame () {
-        if (instance.Finder.CurrentState == PathFinder.State.Finding)
+        if (instanceMaze.Finder.CurrentState == PathFinder.State.Finding)
             return;
 
-        instance.CurrentState = Maze.State.CreatingCells;
+        instanceMaze.CurrentState = Maze.State.CreatingCells;
 
         StopAllCoroutines();
-        instance.KillCells();
+        instanceMaze.KillCells();
 		BeginGame();
 	}
 

@@ -31,7 +31,32 @@ public class PathFinder : MonoBehaviour
 
     public Stack Path
     {
-        get { return m_path; }
+        get { return m_path.Clone() as Stack; }//clone sinon la stack se vide quand on l'utilise ailleurs
+    }
+
+    public List<Vector3> PathList //pour la boule
+    {
+        get
+        {
+            List<Vector3> vectorPath = new List<Vector3>();
+            Stack path = Path;
+
+            while (path.Count > 0)
+            {
+                Node node = path.Pop() as Node;
+                vectorPath.Add(node.Cell.transform.position);
+            }
+
+            //Ne pas oublier : si le chemin est en train d'être trouvé, les coordonnées sont à l'envers !
+            if (CurrentState != State.Found && vectorPath.Count > 1)
+            {
+                List<Vector3> reversePath = vectorPath;
+                reversePath.Reverse();
+                vectorPath = reversePath;
+            }
+
+            return vectorPath;
+        }
     }
 
     public Cell From
@@ -61,6 +86,8 @@ public class PathFinder : MonoBehaviour
         m_path = new Stack();
         m_openList = new List<Node>();
         m_closedList = new List<Node>();
+
+        m_state = State.NotFound;
     }
 
     // Update is called once per frame
@@ -101,6 +128,7 @@ public class PathFinder : MonoBehaviour
 
     public IEnumerator FindPath()
     {
+        Debug.Log("============= Calcul de l'itineraire ============= ");
         m_openList = null;
         m_closedList = null;
         m_path = null;
@@ -177,7 +205,6 @@ public class PathFinder : MonoBehaviour
         if (m_state == State.Finding)
         {
             m_state = State.NotFound;
-            m_path = null;
             Debug.Log("Pas de chemin trouvé entre " + m_from.name + " et " + m_to.name);
         }
 
@@ -261,7 +288,7 @@ public class PathFinder : MonoBehaviour
 
     void drawPath()
     {
-        Stack tmp_path = m_path;
+        Stack tmp_path = m_path.Clone() as Stack;
         Node tmp_node = tmp_path.Pop() as Node;
         bool draw = true;
         while (draw)
