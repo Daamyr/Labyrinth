@@ -14,7 +14,7 @@ public class Maze : MonoBehaviour
     public GameObject floorPrefab;
     public GameObject wallPrefab;
 
-    public Cell cellObject;
+    public StandardCell cellObject;
 
     public PathFinder aStar;
     PathFinder m_finder;
@@ -24,11 +24,18 @@ public class Maze : MonoBehaviour
     public Vector2Int endCell;
     public Vector2Int mazeSize;
 
-    private Cell[,] cells;
+    private GameController m_gameController;
+
+    public GameController GameController
+    {
+        set { m_gameController = value; }
+    }
+
+    private StandardCell[,] cells;
     private Vector2Int m_size;
     Stack m_path;//chemin final
     Stack m_stack; //stack à dépiller
-
+    
     public PathFollower prefabFollower;
     public float huntDelay = 1;
 
@@ -49,7 +56,7 @@ public class Maze : MonoBehaviour
         get { return m_size; }
     }
 
-    public Cell[,] Cells
+    public StandardCell[,] Cells
     {
         get { return cells; }
         set { cells = value; }
@@ -116,12 +123,12 @@ public class Maze : MonoBehaviour
     public IEnumerator Generate()
     {
         WaitForSeconds delay = new WaitForSeconds(generationStepDelay);
-        cells = new Cell[m_size.x, m_size.y];
-        for (int i = 0; i < m_size.x; i++)
+        cells = new StandardCell[m_size.x, m_size.y];
+        for (int x = 0; x < m_size.x; x++)
         {
             for (int y = 0; y < m_size.y; y++)
             {
-                CreateCell(new Vector2Int(i, y));
+                cells[x, y] = m_gameController.CellFactory.makeStandardCell(new Vector2Int(x, y)) as StandardCell;
                 yield return delay;
             }
         }
@@ -155,7 +162,7 @@ public class Maze : MonoBehaviour
         while (m_state == State.CreatingPath)
         {
             WaitForSeconds delay = new WaitForSeconds(huntDelay);
-            Cell cell = m_stack.Peek() as Cell;
+            ACell cell = m_stack.Peek() as ACell;
             cell.Visited = true;
 
             if (AllVisited())
@@ -164,14 +171,14 @@ public class Maze : MonoBehaviour
                 yield break;
             }
 
-            List<Cell> possibleCell = new List<Cell>();
+            List<ACell> possibleCell = new List<ACell>();
             possibleCell = cell.NeighborList;
 
             bool again;
             do
             {
                 again = false;
-                foreach (Cell neighbor in possibleCell)
+                foreach (StandardCell neighbor in possibleCell)
                 {
                     if (neighbor.Visited)
                     {
@@ -203,23 +210,27 @@ public class Maze : MonoBehaviour
     }
 
     //TODO: Move this code to the a factory
-    private void CreateCell(Vector2Int coordinates)
-    {
-        Vector3 position = new Vector3(coordinates.x * floorPrefab.transform.lossyScale.x + floorPrefab.transform.lossyScale.x,
-                                                   0f,
-                                                   coordinates.y * floorPrefab.transform.lossyScale.z + floorPrefab.transform.lossyScale.z);
+    //private void CreateCell(Vector2Int coordinates)
+    //{
 
-        Cell newCell = Instantiate(cellObject, position, new Quaternion()) as Cell;
 
-        newCell.Coordinates = position;
-        newCell.FloorPrefab = floorPrefab;
-        newCell.WallPrefab = wallPrefab;
-        newCell.name = "Maze Cell " + coordinates.x + ", " + coordinates.y;
-        newCell.Maze = this;
-        newCell.Generate();
+    //    /*Vector3 position = new Vector3(coordinates.x * floorPrefab.transform.lossyScale.x + floorPrefab.transform.lossyScale.x,
+    //                                               0f,
+    //                                               coordinates.y * floorPrefab.transform.lossyScale.z + floorPrefab.transform.lossyScale.z);
 
-        cells[coordinates.x, coordinates.y] = newCell;
-    }
+    //    StandardCell newCell = Instantiate(cellObject, position, new Quaternion()) as StandardCell;
+
+    //    newCell.Coordinates = position;
+    //    newCell.FloorPrefab = floorPrefab;
+    //    newCell.WallPrefab = wallPrefab;
+    //    newCell.name = "Maze StandardCell " + coordinates.x + ", " + coordinates.y;
+    //    newCell.Maze = this;
+    //    newCell.Generate();*/
+
+        
+
+    //    cells[coordinates.x, coordinates.y] = m_gameController.CellFactory.makeStandardCell(coordinates) as StandardCell;
+    //}
 
     bool AllVisited()
     {
@@ -235,6 +246,7 @@ public class Maze : MonoBehaviour
         }
 
         //Debug.Log("C FINI LOL");
+        m_gameController.freePlayer();
         return true;
     }
 

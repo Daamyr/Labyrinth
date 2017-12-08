@@ -15,12 +15,12 @@ public class PathFollower : MonoBehaviour
     public OscillatingBall ballPrefab;
     OscillatingBall ball;
 
+    bool atDestination = false;
+
     public List<Vector3> Path
     {
         set { m_path = value; }
     }
-
-    public int m_nbNode;
 
     // Use this for initialization
     void Start()
@@ -34,26 +34,7 @@ public class PathFollower : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if (m_path.Count <= 0)
-        //    tourne = false;
-        //if (tourne)
-        //{
-        //    if (Vector3.Distance(transform.position, currentTarget) <= distanceRespectable)
-        //    {
-        //        try
-        //        {
-        //            List<Vector3> tmp = m_path;
-        //            tmp.RemoveAt(0);
-        //            m_path = tmp;
-        //            currentTarget = m_path[0];
-        //        }
-        //        catch { }
-        //    }
-        //    else
-        //    {
-        //        transform.position = Vector3.SmoothDamp(transform.position, currentTarget, ref velocity, smoothTime);
-        //    }
-        //}
+
     }
 
     IEnumerator FollowPath()
@@ -61,7 +42,7 @@ public class PathFollower : MonoBehaviour
         currentTarget = m_path[0];
         while (m_path.Count > 0)
         {
-            WaitForFixedUpdate delay = new WaitForFixedUpdate();
+            //WaitForFixedUpdate delay = new WaitForFixedUpdate();
 
             if (Vector3.Distance(transform.position, currentTarget) <= distanceRespectable)
             {
@@ -84,6 +65,7 @@ public class PathFollower : MonoBehaviour
 
         Destroy(ball.gameObject);
         Destroy(gameObject);
+        atDestination = true;
     }
 
     void fakePath()

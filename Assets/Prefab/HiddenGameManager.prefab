@@ -126,6 +126,8 @@ MonoBehaviour:
   maze: {fileID: 114812052503116626, guid: 1bc70b7ada2b07244a1aeac3c746ec39, type: 2}
   player: {fileID: 114390191549141930, guid: 15d67c96ffcd8e449a679c4a2744749e, type: 2}
   finder: {fileID: 114562705619889232, guid: bea2d2660d7db884186d44ccf5b6b0fe, type: 2}
-  endCell: {x: 0, y: 4}
+  endCell: {x: 9, y: 9}
   pathFollower: {fileID: 114409352059370092, guid: 74b0cb2c709133e4e95e8ff916781a6c,
+    type: 2}
+  cellFactory: {fileID: 114024125127274312, guid: 8c1dedf1c7f990f438641a4c684c48bd,
     type: 2}

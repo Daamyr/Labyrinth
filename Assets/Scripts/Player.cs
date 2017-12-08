@@ -4,15 +4,42 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    
+
     public new GameObject gameObject;
-    public GameObject camera;
+    //public GameObject camera;
 
     public float forceSaut = 25f;
-    public float maxSaut = 10f;
-    private Action forward, back, right, left, jump;
+    public float range = 1;
+
+    private AAction forward, back, right, left, plane;
+    private Vector3 prevPos;
 
     private GameController gameController;
+
+    public AAction Forward
+    {
+        get { return forward; }
+    }
+
+    public AAction Back
+    {
+        get { return back; }
+    }
+
+    public AAction Right
+    {
+        get { return right; }
+    }
+
+    public AAction Left
+    {
+        get { return left; }
+    }
+
+    public AAction Plane
+    {
+        get { return plane; }
+    }
 
     public GameController GameController
     {
@@ -28,6 +55,13 @@ public class Player : MonoBehaviour
     Vector2Int currentPosition;
 
     //public PathFinder aStar;
+
+    IMode m_mode;
+
+    public IMode Mode
+    {
+        set { m_mode = value; }
+    }
 
     enum State
     {
@@ -45,23 +79,23 @@ public class Player : MonoBehaviour
     void Start()
     {
         m_state = State.Standing;
-
+        //m_mode = new ControlMode();
         forward = new Forward();
         back = new Back();
         right = new Right();
         left = new Left();
-        jump = new Jump(forceSaut, maxSaut, this.GetComponents<Rigidbody>()[0]);
+        plane = new Plane(forceSaut, this.GetComponents<Rigidbody>()[0]);
     }
 
-    Vector3 prevPos;
 
     // Update is called once per frame
     void FixedUpdate()
     {
         handleKey();
+        m_mode.Execute(this);
         checkPostion();
     }
-    public float range = 1;
+
     void checkPostion()
     {
         RaycastHit hit;
@@ -72,7 +106,7 @@ public class Player : MonoBehaviour
                 lastPosition = hit.collider;
             if (hit.collider != lastPosition)
             {
-                Cell[,] cells = gameController.Cells;
+                ACell[,] cells = gameController.Cells;
 
                 for (int x = 0; x < gameController.MazeSize.x; x++)
                 {
@@ -89,60 +123,49 @@ public class Player : MonoBehaviour
                 }
             }
         }
-
-
-
-
-    }
-
-    public void OnCollisionEnter(Collision col)
-    {
-
-        //Debug.Log (col.gameObject.name);
-        //player.GetComponents<hello> () [0].salut ();
-
     }
 
     public void handleKey()
     {
-        //public key binding ?
-        if (Input.GetKey(KeyCode.W))
+        if (Input.GetKeyDown(KeyCode.Alpha1))//mode auto
         {
-            m_state = State.Walking;
-            forward.Execute(this, forward);
+            PathFinder instanceFinder = Instantiate(gameController.finder);
+            instanceFinder.name = "Finder from player";
+            instanceFinder.Maze = gameController.MazeInstance;
+
+            Vector2Int pos = CurrentPosition;
+
+            instanceFinder.From = gameController.MazeInstance.Cells[pos.x, pos.y];
+            instanceFinder.To = gameController.MazeInstance.Cells[gameController.endCell.x, gameController.endCell.y];
+
+            instanceFinder.SearchPath();
+
+            m_mode = new AutoMode();
+            List<Vector3> reversePath = instanceFinder.PathList;
+            reversePath.Reverse();
+            m_mode.m_path = reversePath;
+            Debug.Log("AutoMode");
+
+            Destroy(instanceFinder.gameObject);
         }
 
-        if (Input.GetKey(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.Alpha2))//mode controle
         {
-            back.Execute(this, back);
-        }
-
-        if (Input.GetKey(KeyCode.D))
-        {
-            right.Execute(this, right);
-        }
-
-        if (Input.GetKey(KeyCode.A))
-        {
-            left.Execute(this, left);
-        }
-
-        if (Input.GetKey(KeyCode.Space))
-        {
-            jump.Execute(this, jump);
+            m_mode = new ControlMode();
+            Debug.Log("controlMode");
         }
 
         if (Input.GetKeyDown(KeyCode.F))
         {
-            if (gameController.MazeInstance.CurrentState !=  Maze.State.CreatingCells)
+            if (gameController.MazeInstance.CurrentState != Maze.State.CreatingCells && gameController.InstanceFinder.CurrentState != PathFinder.State.Finding)
             {
                 PathFollower pathFollower = Instantiate(gameController.pathFollower, transform.position, transform.rotation);
 
-                if(gameController.Path.Count > 0)
+                if (gameController.Path.Count > 0)
                 {
-                pathFollower.Path = gameController.Path;
+                    pathFollower.Path = gameController.Path;
 
-                pathFollower.StartCoroutine("FollowPath");
+                    pathFollower.StartCoroutine("FollowPath");
                 }
             }
         }

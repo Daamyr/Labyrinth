@@ -9,12 +9,14 @@ public class GameController : MonoBehaviour {
     public PathFinder finder;
     public Vector2Int endCell;
     public PathFollower pathFollower;
+    public CellFactory cellFactory;
 
     private Maze instanceMaze;
     private Player instancePlayer;
     private PathFinder instanceFinder;
+    private CellFactory instanceCellFactory;
 
-    public Cell[,] Cells
+    public ACell[,] Cells
     {
         get { return instanceMaze.Cells; }
     }
@@ -34,6 +36,16 @@ public class GameController : MonoBehaviour {
         get{ return instanceFinder.PathList; }
     }
 
+    public CellFactory CellFactory
+    {
+        get { return instanceCellFactory; }
+    }
+
+    public PathFinder InstanceFinder
+    {
+        get { return instanceFinder; }
+    }
+
 
     void Awake(){
 	}
@@ -42,8 +54,14 @@ public class GameController : MonoBehaviour {
 
 	void Start(){
         instanceMaze = Instantiate (maze) as Maze;//cast en Maze sinon il retourne un object
+        instanceMaze.GameController = this;
         instancePlayer = Instantiate(player) as Player;
         instancePlayer.GameController = this;
+        instancePlayer.Mode = new ControlMode();
+        instancePlayer.transform.position = new Vector3(10,25,10);
+        instancePlayer.GetComponent<Rigidbody>().isKinematic = true;
+        instanceCellFactory = Instantiate(cellFactory) as CellFactory;
+        instanceCellFactory.GameController = this;
         initFinder();
         BeginGame();
 	}
@@ -64,6 +82,17 @@ public class GameController : MonoBehaviour {
 
         }
 
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            endCell.x = Random.Range(0, instanceMaze.Size.x);
+            endCell.y = Random.Range(0, instanceMaze.Size.y);
+        }
+
+    }
+
+    public void freePlayer()
+    {
+        instancePlayer.GetComponent<Rigidbody>().isKinematic = false;
     }
 
     public void updatePath()

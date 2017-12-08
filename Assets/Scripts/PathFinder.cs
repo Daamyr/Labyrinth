@@ -26,7 +26,7 @@ public class PathFinder : MonoBehaviour
 
     public Maze Maze
     {
-        set {  m_maze = value; Debug.Log("salut " + m_maze); }
+        set { m_maze = value; }
     }
 
     public Stack Path
@@ -59,13 +59,13 @@ public class PathFinder : MonoBehaviour
         }
     }
 
-    public Cell From
+    public StandardCell From
     {
         get { return m_from; }
         set { m_from = value; }
     }
 
-    public Cell To
+    public StandardCell To
     {
         get { return m_to; }
         set { m_to = value; }
@@ -97,7 +97,7 @@ public class PathFinder : MonoBehaviour
     }
 
 
-    Stack reconstructPath(Cell _start, Node _solution)
+    Stack reconstructPath(StandardCell _start, Node _solution)
     {
         //Debug.Log("_start: " + _start.name + " | _currentNode: " + _currentNode.name + " | _currentNode.Parent: " + _currentNode.Parent);
         Node node = _solution;
@@ -123,8 +123,8 @@ public class PathFinder : MonoBehaviour
      * */
 
     //a redéfinir avant chaque tentative de find
-    Cell m_from;
-    Cell m_to;
+    StandardCell m_from;
+    StandardCell m_to;
 
     public IEnumerator FindPath()
     {
@@ -224,13 +224,13 @@ public class PathFinder : MonoBehaviour
      * Ancienne version:
      * Celle-ci ne se fait pas sur plusieurs frame, donc elle gèle le system pour faire le calcul
     */
-    public Stack SearchPath(Cell _from, Cell _to)
+    public Stack SearchPath(/*StandardCell _from, StandardCell _to*/)
     {
         m_path = new Stack();
         m_openList = new List<Node>();
         m_closedList = new List<Node>();
-        setAllNodes(_to);
-        m_activeNode = _from.Node;
+        setAllNodes(m_to);
+        m_activeNode = m_from.Node;
         m_openList.Add(m_activeNode);
 
         while (m_openList.Count > 0)
@@ -239,12 +239,13 @@ public class PathFinder : MonoBehaviour
             for (int i = 0; i < m_openList.Count; i++)
             {
                 //verify the solution
-                if (m_openList[i] == _to.Node)
+                if (m_openList[i] == m_to.Node)
                 {
                     m_openList[i].Parent = m_activeNode;
                     m_activeNode = m_openList[i];
-                    m_path = reconstructPath(_from, m_activeNode);
+                    m_path = reconstructPath(m_from, m_activeNode);
                     drawPath();
+                    Debug.Log("PATH FOUND");
                     return m_path;
                 }
                 //else it continues
@@ -265,7 +266,7 @@ public class PathFinder : MonoBehaviour
 
                 //Debug.Log("node: " + m_activeNode.name + " | neighbor: " + node.name);
                 //Debug.Log("m_openList.Contains(node): " + m_openList.Contains(node));
-                //Debug.Log("m_activeNode.Cell.canAccess(node.Cell): " + m_activeNode.Cell.canAccess(node.Cell));
+                //Debug.Log("m_activeNode.StandardCell.canAccess(node.StandardCell): " + m_activeNode.StandardCell.canAccess(node.StandardCell));
                 //Debug.Log("tmp_G > node.G: " + (tmp_G > node.G) + " | node.G: " + node.G + " | tmp_G: " + tmp_G);
 
                 if (m_closedList.Contains(node))
@@ -290,7 +291,7 @@ public class PathFinder : MonoBehaviour
             //Debug.Break();//stop le programme après une FRAME
         }
 
-        Debug.Log("Pas de chemin trouvé entre " + _from.name + " et " + _to.name);
+        Debug.Log("Pas de chemin trouvé entre " + m_from.name + " et " + m_to.name);
 
         return null;
     }
@@ -314,14 +315,14 @@ public class PathFinder : MonoBehaviour
         }
     }
 
-    void setAllNodes(Cell _target)
+    void setAllNodes(StandardCell _target)
     {
         //Debug.Log(">>>>> " + m_maze);
         for (int x = 0; x < m_maze.Size.x; x++)
         {
             for (int y = 0; y < m_maze.Size.y; y++)
             {
-                Cell tmpCell = m_maze.Cells[x, y];
+                StandardCell tmpCell = m_maze.Cells[x, y];
                 tmpCell.Node.G = Mathf.Infinity;
                 tmpCell.Node.H = Vector3.Distance(tmpCell.transform.position, _target.transform.position);
             }

@@ -8,7 +8,7 @@ public class Node : MonoBehaviour{
     float m_G, m_H;
     Node m_parent;
     Maze m_maze;
-    Cell m_belongsTo;
+    StandardCell m_belongsTo;
 
     #region Getters/Setters
     public Maze Maze
@@ -34,7 +34,7 @@ public class Node : MonoBehaviour{
         get { return m_G + m_H; }
     }
 
-    public Cell Cell
+    public StandardCell Cell
     {
         get { return m_belongsTo; }
         set { m_belongsTo = value; }

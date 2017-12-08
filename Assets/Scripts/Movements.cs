@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Action {
+public abstract class AAction {
 
 	public float speed = 6.0f;
 
-	public abstract void Execute (Player player, Action action);
+	public abstract void Execute (Player player, AAction action);
 	public abstract void Move (Transform player_body);
-	//TODO: les actions doivent changer le state
 }
 
-public class Forward : Action {
-	public override void Execute (Player player, Action action){
+public class Forward : AAction {
+	public override void Execute (Player player, AAction action){
 		Move (player.gameObject.transform);
 	}
 
@@ -24,21 +23,21 @@ public class Forward : Action {
 	}
 }
 
-public class Back : Action {
-	public override void Execute (Player player, Action action){
+public class Back : AAction {
+	public override void Execute (Player player, AAction action){
 		Move (player.gameObject.transform);
 	}
 
 	public override void Move (Transform player){
-		//		Debug.Log ("MOVE FORWARD");
+		//		Debug.Log ("MOVE BACK");
 		Vector3 movement = player.forward * -1 * speed * Time.deltaTime;
 
 		player.position += movement;
 	}
 }
 
-public class Right : Action {
-	public override void Execute (Player player, Action action){
+public class Right : AAction {
+	public override void Execute (Player player, AAction action){
 		Move (player.gameObject.transform);
 	}
 
@@ -50,8 +49,8 @@ public class Right : Action {
 	}
 }
 	
-public class Left : Action {
-	public override void Execute (Player player, Action action){
+public class Left : AAction {
+	public override void Execute (Player player, AAction action){
 		Move (player.gameObject.transform);
 	}
 
@@ -63,19 +62,17 @@ public class Left : Action {
 	}
 }
 
-public class Jump : Action {
+public class Plane : AAction {
 	private float forceSaut;
-	private float maxSaut;
 	private Rigidbody rig; //pour ajouter la force
 
-	public Jump(float _forceSaut, float _maxSaut, Rigidbody _rig){
+	public Plane(float _forceSaut, Rigidbody _rig){
 		forceSaut = _forceSaut;
-		maxSaut = _maxSaut;
 		rig = _rig;
 	}
 
 
-	public override void Execute (Player player, Action action){
+	public override void Execute (Player player, AAction action){
 		Move (player.gameObject.transform);
 	}
 

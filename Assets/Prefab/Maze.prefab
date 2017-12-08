@@ -54,12 +54,12 @@ MonoBehaviour:
   floorPrefab: {fileID: 1977234794633560, guid: 70376d065a4281d4089da61118ac1880,
     type: 2}
   wallPrefab: {fileID: 1519036981174886, guid: 3d257d0b4efd5e247b57fe99ae8ae78a, type: 2}
-  cellObject: {fileID: 114350756959143878, guid: e182d9a575935584397a85146e723fbf,
+  cellObject: {fileID: 114321022842873976, guid: e182d9a575935584397a85146e723fbf,
     type: 2}
   aStar: {fileID: 114562705619889232, guid: bea2d2660d7db884186d44ccf5b6b0fe, type: 2}
   beginCell: {x: 0, y: 0}
-  endCell: {x: 14, y: 14}
-  mazeSize: {x: 5, y: 5}
+  endCell: {x: 9, y: 9}
+  mazeSize: {x: 10, y: 10}
   prefabFollower: {fileID: 114409352059370092, guid: 74b0cb2c709133e4e95e8ff916781a6c,
     type: 2}
   huntDelay: 0
